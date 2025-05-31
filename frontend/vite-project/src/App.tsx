@@ -12,7 +12,7 @@ import DetalleEventoPage from "./pages/usuario/DetalleEventoPage";
 import MisEventosPage from "./pages/usuario/MisEventosPage";
 import UsuarioResenasPage from "./pages/usuario/UsuarioResenasPage";
 import UsuarioCheckInPage from "./pages/usuario/UsuarioCheckInPage"; // Si la tienes
-
+import DetalleReservaPage from "./pages/usuario/DetalleReservaPage";
 // Empresa
 import EmpresaHomePage from "./pages/empresa/EmpresaHomePage";
 import DashboardPage from "./pages/empresa/DashboardPage";
@@ -34,7 +34,7 @@ function App() {
         <Route path="/usuario/mis-eventos" element={<MisEventosPage />} />
         <Route path="/usuario/reseñas" element={<UsuarioResenasPage />} />
         <Route path="/usuario/acceso/:id" element={<UsuarioCheckInPage />} />
-
+        <Route path="/usuario/reservations/:reservationId/event/:eventId" element={<DetalleReservaPage />} />
         {/* Empresa */}
         <Route path="/empresa/home" element={<EmpresaHomePage />} />
         <Route path="/empresa/dashboard" element={<DashboardPage />} />

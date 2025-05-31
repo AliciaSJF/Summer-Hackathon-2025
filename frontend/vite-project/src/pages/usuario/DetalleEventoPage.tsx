@@ -19,7 +19,7 @@ export default function DetalleEventoPage() {
   const [evento, setEvento] = useState<Evento | null>(null);
   const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(true);
-  const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
+  const usuario = JSON.parse(localStorage.getItem("usuario") || '{"_id": "683b4bfdebc0428122dd8146"}') // TODO: MODIFY IN PRODUCTION
 
   useEffect(() => {
     fetch(`http://localhost:8001/events/${id}`)
@@ -34,6 +34,10 @@ export default function DetalleEventoPage() {
 
   const handleRegistro = async () => {
     try {
+
+      console.log("evento:", evento?._id);
+      console.log("usuario:", usuario?._id);
+
       const res = await fetch("http://localhost:8001/reservations", {
         method: "POST",
         headers: {

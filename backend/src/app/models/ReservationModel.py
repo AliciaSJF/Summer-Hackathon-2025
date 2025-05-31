@@ -11,6 +11,10 @@ class ReviewSubdoc(BaseModel):
     comment: str
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     metadata: Optional[dict] = None
+    
+class ReviewCreationModel(BaseModel):
+    rating: int
+    comment: str
 
 class CheckinSubdoc(BaseModel):
     status: str  # "pending" | "completed" | "anomaly" | "trouble" ESTE HACE REFERENCIA AL STATUS DEL CHECKIN, NO AL RESERVA

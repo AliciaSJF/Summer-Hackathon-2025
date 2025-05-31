@@ -84,7 +84,11 @@ async def get_event_by_id(
 ):
     col = db["events"]
     # Since EventModel uses string IDs (uuid4), not ObjectIds
-    event = col.find_one({"_id": event_id, "businessId": business_id})
+    if not id_length_check(event_id):
+        event = col.find_one({"_id": event_id, "businessId": business_id})
+    else:
+        event = col.find_one({"_id": ObjectId(event_id), "businessId": business_id})
+        
     if not event:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -246,3 +250,15 @@ async def get_events_for_user(
             events_with_reservation_id.append(paired_data)
     
     return events_with_reservation_id
+
+# Endpoint for personal recommendations with GenAI
+@all_events_router.get(
+    f"/recommendations/{user_id}",
+    response_model=List[EventModel],
+    summary="Obtener recomendaciones de eventos para un usuario",
+)
+async def get_recommendations(
+    user_id: str,
+    db: Database = Depends(get_db),
+):
+    pass

@@ -16,7 +16,8 @@ class EventModel(BaseModel):
     capacity: int
     location: str
     createdAt: datetime = Field(default_factory=datetime.utcnow)
-
+    price: float
+    
     class Config:
         json_encoders = {ObjectId: str}
         validate_by_name = True

@@ -27,21 +27,14 @@ export default function MisEventosPage() {
   );
 
   useEffect(() => {
-    console.log("usuario:", usuario);
     fetch(`http://localhost:8001/events/user/${usuario._id}/reservations`)
-      .then((res) => {
-        const response = res.json();
-        console.log(response);
-        return response;
-      })
+      .then((res) => res.json())
       .then(setEventos)
       .catch((err) => {
         console.error(err);
         setError("❌ Error al cargar eventos");
       })
-      .finally(() => {
-        setLoading(false);
-      });
+      .finally(() => setLoading(false));
   }, []);
 
   const handleReservationClick = (reservationId: string, eventId: string) => {
@@ -49,15 +42,19 @@ export default function MisEventosPage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md space-y-6">
-      <h2 className="text-2xl font-semibold mb-4">Tus eventos</h2>
+    <div className="p-6 max-w-4xl mx-auto bg-usuario rounded-lg shadow-md space-y-6">
+      <h2 className="text-2xl font-semibold text-text-main mb-4">
+        Tus eventos
+      </h2>
 
       {loading ? (
-        <p>Cargando eventos...</p>
+        <p className="text-gray-700">Cargando eventos...</p>
       ) : error ? (
         <p className="text-red-600">{error}</p>
       ) : eventos.length === 0 ? (
-        <p>No hay eventos disponibles en este momento.</p>
+        <p className="text-gray-700">
+          No hay eventos disponibles en este momento.
+        </p>
       ) : (
         <ul className="space-y-4">
           {eventos.map((evento) => (
@@ -66,9 +63,11 @@ export default function MisEventosPage() {
               onClick={() =>
                 handleReservationClick(evento.reservation_id, evento._id)
               }
-              className="border p-4 rounded shadow-sm bg-gray-50 hover:bg-blue-50 cursor-pointer transition"
+              className="border border-gray-300 p-4 rounded shadow-sm bg-white hover:bg-gray-50 cursor-pointer transition"
             >
-              <h3 className="text-lg font-semibold">{evento.name}</h3>
+              <h3 className="text-lg font-semibold text-text-main">
+                {evento.name}
+              </h3>
               <p>📍 {evento.location}</p>
               <p>🗓️ {new Date(evento.start).toLocaleString()}</p>
               {evento.type === "temporal" && evento.end && (
@@ -76,7 +75,9 @@ export default function MisEventosPage() {
               )}
               <p>👥 Aforo: {evento.capacity}</p>
               <p>💰 Precio: {evento.price || 0} €</p>
-              <p>🔑 ID de la reserva: {evento.reservation_id}</p>
+              <p className="text-xs text-gray-500">
+                🔑 ID de la reserva: {evento.reservation_id}
+              </p>
             </li>
           ))}
         </ul>

@@ -36,9 +36,10 @@ export default function DetalleReservaPage() {
   const [reserva, setReserva] = useState<Reserva | null>(null);
   const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(true);
+
   const usuario = JSON.parse(
     localStorage.getItem("usuario") || '{"_id": "683b4bfdebc0428122dd8146"}'
-  ); // TODO: MODIFY IN PRODUCTION
+  );
 
   useEffect(() => {
     fetch(`http://localhost:8001/events/${eventId}`)
@@ -47,8 +48,7 @@ export default function DetalleReservaPage() {
       .catch((err) => {
         console.error(err);
         setMensaje("❌ Error al cargar el evento");
-      })
-      .finally(() => setLoading(false));
+      });
 
     fetch(`http://localhost:8001/reservations/${reservationId}`)
       .then((res) => res.json())
@@ -62,9 +62,6 @@ export default function DetalleReservaPage() {
 
   const handleRegistro = async () => {
     try {
-      console.log("evento:", evento?._id);
-      console.log("usuario:", usuario?._id);
-
       const res = await fetch("http://localhost:8001/reservations", {
         method: "POST",
         headers: {
@@ -94,49 +91,48 @@ export default function DetalleReservaPage() {
   if (loading) return <div className="p-6">Cargando evento...</div>;
 
   return (
-    <div className="p-6 max-w-3xl mx-auto bg-white rounded shadow space-y-4">
+    <div className="p-6 max-w-3xl mx-auto bg-usuario rounded shadow space-y-4">
       {evento ? (
         <>
-          <h1 className="text-3xl font-bold">{evento.name}</h1>
-          <p className="text-gray-700">{evento.description}</p>
+          <h1 className="text-3xl font-bold text-text-main">{evento.name}</h1>
+          <p className="text-gray-800">{evento.description}</p>
           <p>
-            <strong>Ubicación:</strong> {evento.location}
+            <strong>📍 Ubicación:</strong> {evento.location}
           </p>
           <p>
-            <strong>Inicio:</strong> {new Date(evento.start).toLocaleString()}
+            <strong>🕒 Inicio:</strong>{" "}
+            {new Date(evento.start).toLocaleString()}
           </p>
           {evento.type === "temporal" && evento.end && (
             <p>
-              <strong>Fin:</strong> {new Date(evento.end).toLocaleString()}
+              <strong>➡️ Fin:</strong> {new Date(evento.end).toLocaleString()}
             </p>
           )}
           <p>
-            <strong>Aforo:</strong> {evento.capacity}
+            <strong>👥 Aforo:</strong> {evento.capacity}
           </p>
           <p>
-            <strong>Precio:</strong> {evento.price} €
+            <strong>💰 Precio:</strong> {evento.price} €
           </p>
 
-          {/* Divisor */}
           <hr className="my-6 border-gray-300" />
 
-          {/* Datos de la Reserva */}
-          <div className="bg-gray-50 p-4 rounded-lg">
-            <h2 className="text-2xl font-semibold mb-4">
+          <div className="bg-white p-4 rounded-lg shadow-inner">
+            <h2 className="text-2xl font-semibold mb-4 text-text-main">
               📋 Datos de la Reserva
             </h2>
 
             {reserva ? (
               <div className="space-y-6">
-                {/* QR Code */}
                 <div className="flex flex-col items-center">
-                  <h3 className="text-lg font-medium mb-2">🔲 Código QR</h3>
+                  <h3 className="text-lg font-medium mb-2 text-text-main">
+                    🔲 Código QR
+                  </h3>
                   <img
                     src="/src/assets/fake-qr.png"
                     alt="Código QR de la reserva"
                     className="w-32 h-32 border-2 border-gray-300 rounded-lg"
                     onError={(e) => {
-                      // Fallback if image doesn't exist
                       e.currentTarget.src =
                         "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwIi8+CjxyZWN0IHg9IjgwIiB5PSIxNiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwIi8+CjxyZWN0IHg9IjE2IiB5PSI4MCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwIi8+Cjx0ZXh0IHg9IjY0IiB5PSI3MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RUjwvdGV4dD4KPC9zdmc+";
                     }}
@@ -146,7 +142,6 @@ export default function DetalleReservaPage() {
                   </p>
                 </div>
 
-                {/* Información de la reserva */}
                 <div className="space-y-3">
                   <p>
                     <strong>ID de Reserva:</strong>
@@ -180,7 +175,7 @@ export default function DetalleReservaPage() {
           </div>
         </>
       ) : (
-        <p>Evento no encontrado</p>
+        <p className="text-red-600">❌ Evento no encontrado</p>
       )}
 
       {mensaje && <p className="mt-4 text-blue-700">{mensaje}</p>}

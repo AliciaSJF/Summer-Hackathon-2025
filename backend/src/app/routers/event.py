@@ -140,3 +140,47 @@ async def get_all_events(
     events = list(col.find({}))
     return convert_mongo_docs(events)
 
+# Get evento by id
+@all_events_router.get(
+    "/{event_id}",
+    response_model=EventModel,
+    summary="Obtener evento por ID",
+)
+async def get_event_by_id(
+    event_id: str,
+    db: Database = Depends(get_db),
+):
+    col = db["events"]
+    event = col.find_one({"_id": event_id})
+    if not event:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Event not found"
+        )
+    return convert_mongo_doc(event)
+
+
+# Get all events for a user by user id from reservations
+@all_events_router.get(
+    "/user/{user_id}",
+    response_model=List[EventModel],
+    summary="Obtener todos los eventos de un usuario por su ID",
+)
+async def get_events_for_user(
+    user_id: str,
+    db: Database = Depends(get_db),
+):
+    reservations_col = db["reservations"]
+    events_col = db["events"]
+
+    # Find all reservations for the user
+    reservations = list(reservations_col.find({"userId": user_id}, {"eventId": 1, "_id": 0}))
+    print("reservations:", reservations)
+    event_ids = [res.get("eventId") for res in reservations if res.get("eventId")]
+
+    if not event_ids:
+        return []
+
+    # Find all events with those IDs
+    events = list(events_col.find({"_id": {"$in": event_ids}}))
+    return convert_mongo_docs(events)

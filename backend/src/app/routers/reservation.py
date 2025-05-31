@@ -198,9 +198,6 @@ async def create_trouble(
 
     return True
     
-    
-    
-    
 
 @router.post(
     "/{reservation_id}/review",

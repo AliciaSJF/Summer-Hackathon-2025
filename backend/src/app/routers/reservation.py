@@ -1,6 +1,7 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from pymongo.database import Database
 from bson import ObjectId
+from src.app.services.api_calls import run_kyc_match, call_api
 from src.app.database.mongodb import get_database, get_mongo_client
 from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc, AnomalySubdocModelDTO, ReservationCreateModel
 from dotenv import load_dotenv
@@ -134,6 +135,7 @@ async def do_checkin(
     user_col = db["users"]
     user = user_col.find_one({"_id": ObjectId(user_id)})
     previous_anomaly_checkins = user.get("anomalyCheckins", 0)
+
     # TODO: IMPLEMENT THIS REAL LOGIC
     if previous_anomaly_checkins > 0:
         previous_anomaly_checkins = True
@@ -148,15 +150,37 @@ async def do_checkin(
     # Call to external service to verify KYC
 
     ##telefono del usuario 
-    #phone = res.get("kycInfo").get("phone")
-    #event_id= res.get("eventID")
-    #res = col.find_one({"_id": ObjectId(reservation_id)})
+    phone = user.get("kyc").get("phone")
     #TODO: Implementar verificación de ubicación
-    #event_col = db["events"]
-    #event = event_col.find_one({"_id": ObjectId(res.get("eventId"))})
+    event_col = db["events"]
+    event_id = res.get("eventId")
+    print("event_id:", event_id)
+    length_event_id = event_id
+    if len(length_event_id) > 26:
+        event_type = "string"
+    else:
+        event_type = "objectid"
+    if event_type == "string":
+        event = event_col.find_one({"_id": event_id})
+    else:
+        event = event_col.find_one({"_id": ObjectId(res.get("eventId"))})
     # Get event latitude and longitude
-    #latitude = event.get("latitude")
-    #longitude = event.get("longitude")
+
+    latitude = event.get("latitude")
+    longitude = event.get("longitude")
+    result = call_api(
+        phone=phone,
+        scope="dpv:FraudPreventionAndDetection#device-location-read",
+        user_data={
+            "latitude": latitude,
+            "longitude": longitude
+        }
+    )
+    print("Location verification result:", result)
+
+    
+
+
     # TODO: REMOVE THIS NEXT CODE IMPLEMENT REAL LOCATION VERIFICATION
 
     random_number = random.random()

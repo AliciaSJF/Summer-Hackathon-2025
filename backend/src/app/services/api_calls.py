@@ -25,16 +25,17 @@ def call_api(phone: str, scope: str, user_data: dict = None) -> dict:
     if scope == "dpv:ResearchAndDevelopment#kyc-match:match":
         result = run_kyc_match(token=token, user_data=user_data)
     elif scope == "dpv:FraudPreventionAndDetection#device-location-read":
-        result = verify_location(phone=phone)
+        result = verify_location(phone=phone, code=token, latitude=user_data.get("latitude", 40.442242), longitude=user_data.get("longitude", -3.697463))
     else:
         raise Exception("Scope no válido")
     return result
 
-async def verify_location(phone:str , code:str) -> dict:
+async def verify_location(phone:str , code:str, latitude, longitude) -> dict:
     print("Verificando ubicación del número:", phone, "con código:", code)
     client = DeviceLocation(credentials=credentials, phone_number=phone)
     #result = client.verify(40.5150, -3.6640, 10, phone)
-    result = client.verify(40.442242,-3.697463, 2, phone)
+    #result = client.verify(40.442242,-3.697463, 2, phone)
+    result = client.verify(latitude, longitude, 2, phone)
     print("Resultado de verificación de ubicación:", result)
     return result
 

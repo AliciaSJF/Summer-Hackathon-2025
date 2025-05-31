@@ -49,7 +49,7 @@ function App() {
           <Route path="home" element={<EmpresaHomePage />} />
           <Route path="dashboard" element={<DashboardPage />} />
           <Route path="eventos/nuevo" element={<CrearEventoPage />} />
-          <Route path="checkin" element={<EmpresaCheckInPage />} />
+          <Route path="checkin/:eventId" element={<EmpresaCheckInPage />} />
           <Route path="reseñas" element={<EmpresaResenasPage />} />
         </Route>
 

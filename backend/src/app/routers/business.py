@@ -4,11 +4,16 @@ from bson import ObjectId
 from src.app.database.mongodb import get_database, get_mongo_client
 from src.app.models.BusinessModel import CreateBusinessModel, BusinessModel, BusinessDetailsModel
 from src.app.database.mongodb import get_businesses_collection 
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 router = APIRouter(prefix="/businesses", tags=["businesses"])
 
 def get_db() -> Database:
-    client = get_mongo_client("mongodb+srv://hackathon:mD8Et6rE6DZfLUe6@cluster0.9ols995.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
+    uri = os.getenv("MONGODB_URI")
+    client = get_mongo_client(uri)
     return get_database(client)
 
 @router.post(

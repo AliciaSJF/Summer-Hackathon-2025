@@ -4,11 +4,16 @@ from bson import ObjectId
 from typing import List
 from src.app.database.mongodb import get_database, get_mongo_client
 from src.app.models.EventModel import EventModel
+from dotenv import load_dotenv
+import os
+
+load_dotenv()
 
 router = APIRouter(prefix="/businesses/{business_id}/events", tags=["events"])
 
 def get_db() -> Database:
-    client = get_mongo_client()
+    uri = os.getenv("MONGODB_URI")
+    client = get_mongo_client(uri)
     return get_database(client)
 
 @router.post(

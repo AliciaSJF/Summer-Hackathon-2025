@@ -3,11 +3,15 @@ from pymongo.database import Database
 from bson import ObjectId
 from src.app.database.mongodb import get_database, get_mongo_client
 from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc
+from dotenv import load_dotenv
+import os
 
 router = APIRouter(prefix="/reservations", tags=["reservations"])
 
+load_dotenv()
+
 def get_db() -> Database:
-    client = get_mongo_client()
+    uri = os.getenv("MONGODB_URI")
     return get_database(client)
 
 @router.post(

@@ -10,7 +10,6 @@ class KYCModel(BaseModel):
     name: str
     email: str
     phone: str
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
     birth_date: datetime 
     address: Optional[str] = None
     gender : Optional[str] = None

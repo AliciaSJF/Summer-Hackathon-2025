@@ -19,28 +19,32 @@ REDIRECT_URI = "https://cuatro.studio/ogw/callback"
 
 
 def request_authorization(scope: str, phone: str = "") -> dict:
-    print("Solicitando autorización para el teléfono:", phone)
-    client_id = "0f57c7b9-9d68-497d-95ea-5ed4e589484c"
-    client_secret = "5f7e0446-5c2b-4307-b1ad-b26f833009be"
+    try:
+        print("Solicitando autorización para el teléfono:", phone)
+        client_id = "0f57c7b9-9d68-497d-95ea-5ed4e589484c"
+        client_secret = "5f7e0446-5c2b-4307-b1ad-b26f833009be"
 
-    auth = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
-    headers = {
-        "Authorization": f"Basic {auth}",
-        "Accept": "application/json",
-        "Content-Type": "application/x-www-form-urlencoded"
-    }
-    data = {
-        "login_hint": "tel:+34636260852",  
-        #"scope": "dpv:FraudPreventionAndDetection#device-location-read"
-        #"scope": "dpv:ResearchAndDevelopment#kyc-match:match"
-        scope: scope
-    }
+        auth = base64.b64encode(f"{client_id}:{client_secret}".encode()).decode()
+        headers = {
+            "Authorization": f"Basic {auth}",
+            "Accept": "application/json",
+            "Content-Type": "application/x-www-form-urlencoded"
+        }
+        data = {
+            "login_hint": f"tel:{phone}",  # +34636260852
+            #"scope": "dpv:FraudPreventionAndDetection#device-location-read"
+            #"scope": "dpv:ResearchAndDevelopment#kyc-match:match"
+            "scope": scope
+        }
 
-    response = httpx.post("https://sandbox.opengateway.telefonica.com/apigateway/bc-authorize",
-                        headers=headers, data=data)
-    print("response:", response.text)
-    auth_req_id = response.json().get("auth_req_id")
-    return auth_req_id
+        response = httpx.post("https://sandbox.opengateway.telefonica.com/apigateway/bc-authorize",
+                            headers=headers, data=data)
+        print("response:", response.text)
+        auth_req_id = response.json().get("auth_req_id")
+        return auth_req_id
+    except Exception as e:
+        print("Error al solicitar autorización:", e)
+        return None
 
 def get_access_token_from_auth_req_id(auth_req_id: str) -> str:
     client_id = "0f57c7b9-9d68-497d-95ea-5ed4e589484c"

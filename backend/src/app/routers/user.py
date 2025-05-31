@@ -3,13 +3,14 @@ from pymongo.database import Database
 from src.app.database.mongodb import get_database, get_mongo_client
 from dotenv import load_dotenv
 from src.app.models.UserModel import UserCreateModel, UserModel, KYCModel
+from src.app.services.api_calls import run_kyc_match, call_api
 import os
 from datetime import datetime
 import uuid
 
 load_dotenv()
 
-router = APIRouter(prefix="/reputation/users", tags=["users"])
+router = APIRouter(prefix="/users", tags=["users"])
 
 def get_db() -> Database:
     uri = os.getenv("MONGODB_URI")
@@ -51,11 +52,32 @@ async def create_user(
             "birth_date": payload.birth_date,
             "address": payload.address,
             "gender": payload.gender,
-            "createdAt": datetime.utcnow(),
         }
+        kyc_data_copy = kyc_data.copy()
+        
+        # Handle birth_date conversion for API call
+        # If birth_date is already a datetime object, format it as string
+        # If it's a string, parse it first
+        if isinstance(kyc_data_copy["birth_date"], datetime):
+            # Convert datetime to string format expected by API
+            kyc_data_copy["birth_date"] = kyc_data_copy["birth_date"].strftime("%Y-%m-%d")
+        else:
+            # If it's a string, parse it to ensure correct format
+            kyc_data_copy["birth_date"] = datetime.strptime(kyc_data_copy["birth_date"], "%Y-%m-%d").strftime("%Y-%m-%d")
+            
+        # Remove from copy address
+        del kyc_data_copy["address"]
         
         # TODO: Validate KYC data 
         # Create KYC model instance for validation
+        result = call_api(phone=phone, scope="dpv:ResearchAndDevelopment#kyc-match:match", user_data=kyc_data_copy)
+        print("result:", result)
+        
+        # Comprobar si el diccionario está vacío
+        print("RESULTTTTTTTT: ", result)
+        if result:
+            return result
+        
         kyc_model = KYCModel(**kyc_data)
         
         # TODO: Add actual KYC validation logic here
@@ -85,7 +107,6 @@ async def create_user(
     except Exception as e:
         # If KYC validation or user creation fails, return False
         print(f"Error creating user: {e}")
-        return {"name": False}
 
 
 @router.get("/{user_id}", summary="6. Obtener reputación de usuario")

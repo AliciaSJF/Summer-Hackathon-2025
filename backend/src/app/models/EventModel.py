@@ -4,7 +4,7 @@ from pydantic import BaseModel, Field
 from bson import ObjectId
 from pymongo.database import Database
 import uuid
-
+ 
 class EventModel(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     businessId: str
@@ -17,11 +17,13 @@ class EventModel(BaseModel):
     location: str
     createdAt: datetime = Field(default_factory=datetime.utcnow)
     price: Optional[float] = 0.0  # Default value for existing events
-    
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None
+   
     class Config:
         json_encoders = {ObjectId: str}
         validate_by_name = True
-        
+       
 class CreateEventModel(BaseModel):
     businessId: str
     name: str
@@ -32,4 +34,5 @@ class CreateEventModel(BaseModel):
     capacity: int
     location: str
     price: Optional[float] = 0.0  # Default value for existing events
-    
+    latitude: Optional[float] = None
+    longitude: Optional[float] = None

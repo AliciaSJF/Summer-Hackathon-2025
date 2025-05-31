@@ -127,7 +127,21 @@ async def do_checkin(
     # Call to external service to verify location
     # Call to external service to verify OTP
     # Call to external service to verify KYC
+
+    ##telefono del usuario 
+    phone = res.get("kycInfo").get("phone")
+    event_id= res.get("eventID")
+    res = col.find_one({"_id": ObjectId(reservation_id)})
+    #TODO: Implementar verificación de ubicación
+    event_col = db["events"]
+    event = event_col.find_one({"_id": ObjectId(res.get("eventId"))})
+    # Get event latitude and longitude
+    latitude = event.get("latitude")
+    longitude = event.get("longitude")
+
     
+    #
+
     # TODO: REMOVE THIS NEXT CODE
     random_number = random.random()
     if random_number > 0.5:

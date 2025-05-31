@@ -11,6 +11,9 @@ class KYCModel(BaseModel):
     email: str
     phone: str
     createdAt: datetime = Field(default_factory=datetime.utcnow)
+    birth_date: datetime 
+    address: Optional[str] = None
+    gender : Optional[str] = None
     
     class Config:
         json_encoders = {ObjectId: str}
@@ -38,3 +41,9 @@ class UserModel(BaseModel):
     
 class UserCreateModel(BaseModel):
     mobile: str
+    name: str
+    email: str
+    phone: str
+    birth_date: datetime 
+    address: Optional[str] = None
+    gender : Optional[str] = None

@@ -6,6 +6,7 @@ export default function EmpresaCheckInPage() {
   const [reservations, setReservations] = useState<any[]>([]);
   const [reservationId, setReservationId] = useState("");
   const [mensaje, setMensaje] = useState("");
+  const [anomalia, setAnomalia] = useState("");
 
   const fetchReservations = async () => {
     try {
@@ -38,6 +39,12 @@ export default function EmpresaCheckInPage() {
 
       await fetchReservations();
       setMensaje("✅ Check-in realizado correctamente");
+      const json = await res.json();
+      console.log(json);
+      console.log(json?.previous_anomaly_checkins);
+      if (json?.previous_anomaly_checkins) {
+        setAnomalia("⚠️ Anomalías previas detectadas.");
+      }
       setReservationId("");
     } catch (err) {
       console.error(err);
@@ -67,6 +74,7 @@ export default function EmpresaCheckInPage() {
     const status = r.checkin?.status;
     if (status === "completed") return "bg-green-100";
     if (status === "trouble") return "bg-yellow-100";
+    if (status === "anomaly") return "bg-red-100";
     return "bg-gray-100";
   };
 
@@ -93,7 +101,7 @@ export default function EmpresaCheckInPage() {
       </div>
 
       {mensaje && <p className="text-sm mb-4 text-center">{mensaje}</p>}
-
+      {anomalia && <p className="text-sm mb-4 text-center">{anomalia}</p>}
       <h2 className="text-xl font-semibold mb-2">Reservas</h2>
       <ul className="space-y-2">
         {reservations.map((r) => (

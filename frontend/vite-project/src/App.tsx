@@ -4,10 +4,6 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import NotFound from "./pages/NotFound";
 
-// Layouts
-import UsuarioLayout from "./pages/layouts/UsuarioLayout";
-import EmpresaLayout from "./pages/layouts/EmpresaLayout";
-
 // Usuario
 import RegistroPage from "./pages/usuario/RegistroPage";
 import UsuarioLoginPage from "./pages/usuario/UsuarioLoginPage";
@@ -31,27 +27,27 @@ function App() {
     <BrowserRouter>
       <Routes>
         <Route path="/" element={<HomePage />} />
+
         {/* Usuario */}
-        <Route path="/usuario" element={<UsuarioLayout />}>
-          <Route path="login" element={<UsuarioLoginPage />} />
-          <Route path="registro" element={<RegistroPage />} />
-          <Route path="home" element={<UauarioHomePage />} />
-          <Route path="eventos" element={<EventosPage />} />
-          <Route path="eventos/:id" element={<DetalleEventoPage />} />
-          <Route path="mis-eventos" element={<MisEventosPage />} />
-          <Route path="reseñas" element={<UsuarioResenasPage />} />
-          <Route path="acceso/:id" element={<UsuarioCheckInPage />} />
-        </Route>
+        <Route path="/usuario/login" element={<UsuarioLoginPage />} />
+        <Route path="/usuario/registro" element={<RegistroPage />} />
+        <Route path="/usuario/home" element={<UauarioHomePage />} />
+        <Route path="/usuario/eventos" element={<EventosPage />} />
+        <Route path="/usuario/eventos/:id" element={<DetalleEventoPage />} />
+        <Route path="/usuario/mis-eventos" element={<MisEventosPage />} />
+        <Route path="/usuario/reseñas" element={<UsuarioResenasPage />} />
+        <Route path="/usuario/acceso/:id" element={<UsuarioCheckInPage />} />
 
         {/* Empresa */}
-        <Route path="/empresa" element={<EmpresaLayout />}>
-          <Route path="login" element={<EmpresaLoginPage />} />
-          <Route path="home" element={<EmpresaHomePage />} />
-          <Route path="dashboard" element={<DashboardPage />} />
-          <Route path="eventos/nuevo" element={<CrearEventoPage />} />
-          <Route path="checkin/:eventId" element={<EmpresaCheckInPage />} />
-          <Route path="reseñas" element={<EmpresaResenasPage />} />
-        </Route>
+        <Route path="/empresa/login" element={<EmpresaLoginPage />} />
+        <Route path="/empresa/home" element={<EmpresaHomePage />} />
+        <Route path="/empresa/dashboard" element={<DashboardPage />} />
+        <Route path="/empresa/eventos/nuevo" element={<CrearEventoPage />} />
+        <Route
+          path="/empresa/checkin/:eventId"
+          element={<EmpresaCheckInPage />}
+        />
+        <Route path="/empresa/reseñas" element={<EmpresaResenasPage />} />
 
         {/* 404 */}
         <Route path="*" element={<NotFound />} />

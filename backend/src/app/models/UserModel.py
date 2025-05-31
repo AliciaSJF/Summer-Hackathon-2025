@@ -6,7 +6,7 @@ from pymongo.database import Database
 import uuid
 
 class KYCModel(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     name: str
     email: str
     phone: str
@@ -20,8 +20,7 @@ class KYCModel(BaseModel):
         validate_by_name = True
 
 class UserModel(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
-    mobile: str
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
     verified: bool = False
     kyc: Optional[KYCModel] = None
     roles: List[str] = []
@@ -40,7 +39,6 @@ class UserModel(BaseModel):
         
     
 class UserCreateModel(BaseModel):
-    mobile: str
     name: str
     email: str
     phone: str

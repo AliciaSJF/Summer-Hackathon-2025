@@ -10,6 +10,11 @@ from datetime import datetime
 
 load_dotenv()
 
+def id_length_check(id: str):
+    if len(id) > 26:
+        return False
+    return True
+
 router = APIRouter(prefix="/businesses/{business_id}/events", tags=["events"])
 
 def get_db() -> Database:

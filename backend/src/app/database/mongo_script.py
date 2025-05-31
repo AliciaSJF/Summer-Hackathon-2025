@@ -15,7 +15,7 @@ db = client["reputation_system"]  # Nombre de la base de datos
 # --------------------------------------------------------
 # 2. Creación de colecciones (si no existen)
 # --------------------------------------------------------
-collections = ["users", "businesses", "events", "reservations", "reviewEmbeddings"]
+collections = ["users", "businesses", "events", "reservations", "reviewEmbeddings", "eventEmbeddings"]
 for coll_name in collections:
     try:
         db.create_collection(coll_name)

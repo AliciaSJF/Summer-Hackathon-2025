@@ -40,4 +40,4 @@ class ReservationModel(BaseModel):
 
     class Config:
         json_encoders = {ObjectId: str}
-        allow_population_by_field_name = True
+        validate_by_name = True

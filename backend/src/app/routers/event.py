@@ -253,7 +253,7 @@ async def get_events_for_user(
 
 # Endpoint for personal recommendations with GenAI
 @all_events_router.get(
-    f"/recommendations/{user_id}",
+    "/recommendations/{user_id}",
     response_model=List[EventModel],
     summary="Obtener recomendaciones de eventos para un usuario",
 )

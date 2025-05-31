@@ -9,13 +9,13 @@ export default function HomePage() {
 
       <div className="flex gap-6">
         <button
-          onClick={() => navigate("/usuario/login")}
+          onClick={() => navigate("/usuario/registro")}
           className="bg-white text-blue-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-gray-200 transition"
         >
           Soy Usuario
         </button>
         <button
-          onClick={() => navigate("/empresa/login")}
+          onClick={() => navigate("/empresa/home")}
           className="bg-white text-purple-600 px-6 py-3 rounded-lg text-lg font-semibold hover:bg-gray-200 transition"
         >
           Soy Empresa

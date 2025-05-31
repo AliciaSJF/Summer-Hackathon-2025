@@ -10,10 +10,9 @@ class BusinessModel(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     name: str
     vertical: str
-    plan: str
+    plan: Optional[str] = None
     apiKey: str
     config: dict
-    taxonomyWeights: dict
     totalReservations: int = 0
     totalNoShows: int = 0
     createdAt: datetime = Field(default_factory=datetime.utcnow)
@@ -28,5 +27,4 @@ class CreateBusinessModel(BaseModel):
     plan: str
     apiKey: str
     config: dict
-    taxonomyWeights: dict
     

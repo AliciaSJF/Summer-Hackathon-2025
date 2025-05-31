@@ -9,7 +9,7 @@ class ReviewEmbeddingModel(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     reservationId: str
     userId: str
-    businessId: str
+    eventId: str
     text: str
     embedding: List[float]
     createdAt: datetime = Field(default_factory=datetime.utcnow)

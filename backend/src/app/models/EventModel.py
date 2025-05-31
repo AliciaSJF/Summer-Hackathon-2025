@@ -14,8 +14,7 @@ class EventModel(BaseModel):
     start: datetime
     end: Optional[datetime] = None
     capacity: int
-    rules: dict
-    metadata: Optional[dict] = None
+    location: str
     createdAt: datetime = Field(default_factory=datetime.utcnow)
 
     class Config:

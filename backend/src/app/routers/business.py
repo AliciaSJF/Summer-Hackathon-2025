@@ -35,6 +35,21 @@ async def register_business(
     return inserted
 
 @router.get(
+    "/by-apikey/{api_key}",
+    response_model=BusinessDetailsModel,
+    summary="Obtener detalles de negocio por API Key",
+)
+async def get_business_by_apikey(
+    api_key: str,
+    db: Database = Depends(get_db),
+):
+    business = get_businesses_collection(db).find_one({"apiKey": api_key})
+    if not business:
+        raise HTTPException(status_code=404, detail="Business not found")
+    return business
+
+
+@router.get(
     "/{business_id}",
     response_model=BusinessDetailsModel,
     summary="Obtener detalles de negocio",

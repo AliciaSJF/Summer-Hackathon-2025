@@ -10,6 +10,8 @@ class ReviewEmbeddingModel(BaseModel):
     reservationId: str
     userId: str
     eventId: str
+    businessId: str
+    rating: Optional[float] = None
     text: str
     embedding: List[float]
     createdAt: datetime = Field(default_factory=datetime.utcnow)

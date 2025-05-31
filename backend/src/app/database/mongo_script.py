@@ -7,7 +7,7 @@ from datetime import datetime
 # 1. Conexión a MongoDB
 # --------------------------------------------------------
 # Sustituye por tu URI (puede ser local o Atlas)
-MONGO_URI = "mongodb://localhost:27017"  # :contentReference[oaicite:2]{index=2}
+MONGO_URI = "mongodb+srv://hackathon:mD8Et6rE6DZfLUe6@cluster0.9ols995.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0"  # :contentReference[oaicite:2]{index=2}
 
 client = MongoClient(MONGO_URI)
 db = client["reputation_system"]  # Nombre de la base de datos

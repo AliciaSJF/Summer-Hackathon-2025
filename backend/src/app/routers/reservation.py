@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pymongo.database import Database
 from bson import ObjectId
 from src.app.database.mongodb import get_database, get_mongo_client
-from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc
+from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc, AnomalySubdocModelDTO
 from dotenv import load_dotenv
 import os
 
@@ -43,9 +43,14 @@ async def do_checkin(
     res = col.find_one({"_id": ObjectId(reservation_id)})
     if not res:
         raise HTTPException(404, "Reserva no encontrada")
+    
+    # Call to external service to verify location
+    # Call to external service to verify OTP
+    # Call to external service to verify KYC
+    
     updated_checkin = {
         "status": "completed",
-        "requestedAt": None,
+        "requestedAt": datetime.now(),
         "otpVerified": True,
         "locationVerified": True,
         "completedAt": None,
@@ -57,6 +62,39 @@ async def do_checkin(
         {"$set": {"checkin": updated_checkin, "status": "completed"}}
     )
     return updated_checkin
+
+@router.post(
+    "/{reservation_id}/checkin/anomaly",
+    response_model=bool,
+    summary="5. Crear reseña tras check-in exitoso",
+)
+async def create_anomaly(
+    reservation_id: str,
+    payload: AnomalySubdocModelDTO,
+    db: Database = Depends(get_db),
+):
+    col = db["reservations"]
+    res = col.find_one({"_id": ObjectId(reservation_id)})
+    user_id = res.get("userId")
+    user = col.find_one({"_id": ObjectId(user_id)})
+    # Update user anomalyCheckins +1
+    user["anomalyCheckins"] += 1
+    col.update_one({"_id": ObjectId(user_id)}, {"$set": {"anomalyCheckins": user["anomalyCheckins"]}})
+    
+    anomaly = payload.dict()
+    
+    col.update_one(
+        {"_id": ObjectId(reservation_id)},
+        {}
+    )
+
+    
+    # User update anomalyCheckins +1
+    
+
+    if not res or not res.get("checkin") or res["checkin"].get("status") != "completed":
+        raise HTTPException(400, "Check-in no válido para crear anomalía")
+    
 
 @router.post(
     "/{reservation_id}/review",

@@ -16,7 +16,7 @@ class EventModel(BaseModel):
     capacity: int
     location: str
     createdAt: datetime = Field(default_factory=datetime.utcnow)
-    price: float
+    price: float = 0.0  # Default value for existing events
     
     class Config:
         json_encoders = {ObjectId: str}

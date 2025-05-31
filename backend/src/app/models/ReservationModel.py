@@ -21,6 +21,12 @@ class CheckinSubdoc(BaseModel):
     completedAt: Optional[datetime] = None
     review: Optional[ReviewSubdoc] = None
 
+class AnomalySubdocModelDTO(BaseModel):
+    status: str  # "pending" | "completed" | "anomaly"
+    requestedAt: datetime = Field(default_factory=datetime.utcnow)
+    completedAt: Optional[datetime] = None
+    
+
 class KYCModel(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     name: str
@@ -53,3 +59,6 @@ class ReservationModel(BaseModel):
     class Config:
         json_encoders = {ObjectId: str}
         validate_by_name = True
+
+
+    

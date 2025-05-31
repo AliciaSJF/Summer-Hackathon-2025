@@ -105,7 +105,7 @@ async def update_event(
     updated_event = col.find_one({"_id": event_id, "businessId": business_id})
     return updated_event
 
-#  Obtener todos los eventos
+# Obtener todos los eventos
 # Separate router for getting all events across all businesses
 all_events_router = APIRouter(prefix="/events", tags=["events"])
 

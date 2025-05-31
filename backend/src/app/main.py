@@ -10,6 +10,11 @@ from fastapi.middleware.cors import CORSMiddleware
 
 app = FastAPI(title="Reputation Platform API")
 
+app.include_router(business_router)
+app.include_router(event_router)
+app.include_router(reservation_router)
+app.include_router(user_router)
+app.include_router(recommendation_router)
 
 app.add_middleware(
     CORSMiddleware,
@@ -18,9 +23,3 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-app.include_router(business_router)
-app.include_router(event_router)
-app.include_router(reservation_router)
-app.include_router(user_router)
-app.include_router(recommendation_router)

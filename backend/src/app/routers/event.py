@@ -217,8 +217,7 @@ async def get_events_for_user(
 
     # Find all reservations for the user - get both eventId and reservation _id
     reservations = list(reservations_col.find(
-        {"userId": user_id}, 
-        {"eventId": 1, "_id": 1}
+        {"userId": user_id}
     ))
     print("reservations:", reservations)
     

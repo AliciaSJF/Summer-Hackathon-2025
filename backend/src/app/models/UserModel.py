@@ -35,3 +35,6 @@ class UserModel(BaseModel):
         json_encoders = {ObjectId: str}
         validate_by_name = True
         
+    
+class UserCreateModel(BaseModel):
+    mobile: str

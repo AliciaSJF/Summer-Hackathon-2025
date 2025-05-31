@@ -59,6 +59,14 @@ class ReservationModel(BaseModel):
     class Config:
         json_encoders = {ObjectId: str}
         validate_by_name = True
+        
+class ReservationCreateModel(BaseModel):
+    eventId: str
+    userId: str
+    status: str  # "pending" | "completed" | "anomaly"
+    code: str
+    hashes: Optional[List[str]] = None
+    preverifiedAt: datetime = Field(default_factory=datetime.utcnow)
 
 
     

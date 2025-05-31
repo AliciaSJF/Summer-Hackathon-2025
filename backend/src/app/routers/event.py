@@ -3,7 +3,7 @@ from pymongo.database import Database
 from bson import ObjectId
 from typing import List
 from src.app.database.mongodb import get_database, get_mongo_client
-from src.app.models.EventModel import EventModel
+from src.app.models.EventModel import EventModel, CreateEventModel
 from dotenv import load_dotenv
 import os
 
@@ -23,9 +23,9 @@ def get_db() -> Database:
     summary="2. Crear un nuevo evento/cita",
 )
 async def create_event(
-    business_id: str,
-    payload: EventModel,
+    payload: CreateEventModel,
     db: Database = Depends(get_db),
+    business_id: str = Depends(lambda business_id: business_id),
 ):
     col = db["events"]
     payload.businessId = business_id
@@ -33,6 +33,7 @@ async def create_event(
     result = col.insert_one(new)
     new["_id"] = result.inserted_id
     return new 
+
 
 @router.get(
     "",

@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from pymongo.database import Database
 from bson import ObjectId
 from src.app.database.mongodb import get_database, get_mongo_client
-from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc, AnomalySubdocModelDTO
+from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc, AnomalySubdocModelDTO, ReservationCreateModel
 from dotenv import load_dotenv
 import os
 
@@ -21,7 +21,7 @@ def get_db() -> Database:
     summary="3. Pre-verificación y reserva",
 )
 async def create_reservation(
-    payload: ReservationModel,
+    payload: ReservationCreateModel,
     db: Database = Depends(get_db),
 ):
     col = db["reservations"]

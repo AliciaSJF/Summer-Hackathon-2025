@@ -21,3 +21,15 @@ class EventModel(BaseModel):
     class Config:
         json_encoders = {ObjectId: str}
         validate_by_name = True
+        
+class CreateEventModel(BaseModel):
+    businessId: str
+    name: str
+    description: str
+    type: str  # "fixed" o "temporal"
+    start: datetime
+    end: Optional[datetime] = None
+    capacity: int
+    location: str
+    price: Optional[float] = 0.0  # Default value for existing events
+    

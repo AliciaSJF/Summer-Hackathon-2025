@@ -6,6 +6,7 @@ from src.app.database.mongodb import get_database, get_mongo_client
 from src.app.models.EventModel import EventModel, CreateEventModel
 from dotenv import load_dotenv
 import os
+from datetime import datetime
 
 load_dotenv()
 
@@ -16,6 +17,16 @@ def get_db() -> Database:
     client = get_mongo_client(uri)
     return get_database(client)
 
+def convert_mongo_doc(doc):
+    """Convert MongoDB document to format expected by Pydantic models"""
+    if doc and "_id" in doc:
+        doc["_id"] = str(doc["_id"])
+    return doc
+
+def convert_mongo_docs(docs):
+    """Convert list of MongoDB documents to format expected by Pydantic models"""
+    return [convert_mongo_doc(doc) for doc in docs]
+
 @router.post(
     "",
     response_model=EventModel,
@@ -23,17 +34,23 @@ def get_db() -> Database:
     summary="2. Crear un nuevo evento/cita",
 )
 async def create_event(
+    business_id: str,
     payload: CreateEventModel,
     db: Database = Depends(get_db),
-    business_id: str = Depends(lambda business_id: business_id),
 ):
     col = db["events"]
     payload.businessId = business_id
     new = payload.dict(by_alias=True)
     result = col.insert_one(new)
-    new["_id"] = result.inserted_id
-    return new 
-
+    
+    # Convert ObjectId to string for the response
+    new["_id"] = str(result.inserted_id)
+    
+    # Add createdAt if not present
+    if "createdAt" not in new:
+        new["createdAt"] = datetime.utcnow()
+    
+    return new
 
 @router.get(
     "",
@@ -46,7 +63,7 @@ async def get_events_by_business(
 ):
     col = db["events"]
     events = list(col.find({"businessId": business_id}))
-    return events
+    return convert_mongo_docs(events)
 
 @router.get(
     "/{event_id}",
@@ -59,13 +76,14 @@ async def get_event_by_id(
     db: Database = Depends(get_db),
 ):
     col = db["events"]
+    # Since EventModel uses string IDs (uuid4), not ObjectIds
     event = col.find_one({"_id": event_id, "businessId": business_id})
     if not event:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail="Event not found"
         )
-    return event
+    return convert_mongo_doc(event)
 
 @router.put(
     "/{event_id}",
@@ -104,7 +122,7 @@ async def update_event(
         )
     
     updated_event = col.find_one({"_id": event_id, "businessId": business_id})
-    return updated_event
+    return convert_mongo_doc(updated_event)
 
 # Obtener todos los eventos
 # Separate router for getting all events across all businesses
@@ -120,5 +138,5 @@ async def get_all_events(
 ):
     col = db["events"]
     events = list(col.find({}))
-    return events
+    return convert_mongo_docs(events)
 

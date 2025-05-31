@@ -21,6 +21,17 @@ class CheckinSubdoc(BaseModel):
     completedAt: Optional[datetime] = None
     review: Optional[ReviewSubdoc] = None
 
+class KYCModel(BaseModel):
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    name: str
+    email: str
+    phone: str
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    
+    class Config:
+        json_encoders = {ObjectId: str}
+        validate_by_name = True
+
 class ReservationModel(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     eventId: str
@@ -32,24 +43,13 @@ class ReservationModel(BaseModel):
     otpVerified: bool
     locationVerified: Optional[bool] = None
     kycVerified: bool
-    kycInfo: Optional[User] = None
+    kycInfo: Optional[KYCModel] = None
     checkin: Optional[CheckinSubdoc] = None
     completedAt: Optional[datetime] = None
     cancelledAt: Optional[datetime] = None
     canceledReason: Optional[str] = None
     metadata: Optional[dict] = None  # pricePaid, extras, etc.
 
-    class Config:
-        json_encoders = {ObjectId: str}
-        validate_by_name = True
-        
-class KYCModel(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
-    name: str
-    email: str
-    phone: str
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
-    
     class Config:
         json_encoders = {ObjectId: str}
         validate_by_name = True

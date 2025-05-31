@@ -14,3 +14,4 @@ async def get_recommendations(
     db: Database = Depends(get_db),
 ):
     return {"user_id": user_id, "recommendations": []} 
+

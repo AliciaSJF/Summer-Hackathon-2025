@@ -28,3 +28,10 @@ class CreateBusinessModel(BaseModel):
     apiKey: str
     config: dict
     
+class BusinessDetailsModel(BaseModel):
+    name: str
+    vertical: str
+    plan: str
+    apiKey: str
+    config: dict
+    

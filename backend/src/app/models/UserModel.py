@@ -5,6 +5,17 @@ from bson import ObjectId
 from pymongo.database import Database
 import uuid
 
+class KYCModel(BaseModel):
+    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    name: str
+    email: str
+    phone: str
+    createdAt: datetime = Field(default_factory=datetime.utcnow)
+    
+    class Config:
+        json_encoders = {ObjectId: str}
+        validate_by_name = True
+
 class UserModel(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     mobile: str
@@ -24,14 +35,3 @@ class UserModel(BaseModel):
         json_encoders = {ObjectId: str}
         validate_by_name = True
         
-        
-class KYCModel(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
-    name: str
-    email: str
-    phone: str
-    createdAt: datetime = Field(default_factory=datetime.utcnow)
-    
-    class Config:
-        json_encoders = {ObjectId: str}
-        validate_by_name = True

@@ -51,68 +51,83 @@ export default function UsuarioHomePage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-usuario rounded-lg shadow-md space-y-6">
-      <h1 className="text-3xl font-bold text-text-main">
-        Bienvenido, {usuario?.name || "usuario"}
-      </h1>
+    <div className="min-h-screen bg-usuario py-10 px-4">
+      <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-md p-8 space-y-8 border border-gray-200">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-4">
+          <div>
+            <h1 className="text-3xl font-bold text-text-main mb-1">
+              Bienvenido, {usuario?.name || "usuario"}
+            </h1>
+            <p className="text-gray-600">
+              Explora y gestiona tus eventos favoritos
+            </p>
+          </div>
 
-      <div className="flex flex-wrap gap-4">
-        <button
-          onClick={() => navigate("/usuario/mis-eventos")}
-          className="btn-usuario"
-        >
-          📅 Mis eventos
-        </button>
-        <button
-          onClick={() => navigate("/usuario/reseñas")}
-          className="btn-usuario"
-        >
-          ⭐ Mis reseñas
-        </button>
-        <button
-          onClick={logout}
-          className="btn-usuario bg-red-600 hover:bg-red-700"
-        >
-          🔓 Cerrar sesión
-        </button>
-      </div>
-
-      <hr className="my-6 border-gray-400" />
-
-      <h2 className="text-2xl font-semibold text-text-main">
-        Eventos disponibles
-      </h2>
-
-      {loading ? (
-        <p className="text-gray-700">Cargando eventos...</p>
-      ) : error ? (
-        <p className="text-red-600">{error}</p>
-      ) : eventos.length === 0 ? (
-        <p className="text-gray-700">
-          No hay eventos disponibles en este momento.
-        </p>
-      ) : (
-        <ul className="space-y-4">
-          {eventos.map((evento) => (
-            <li
-              key={evento._id}
-              onClick={() => irADetalle(evento._id)}
-              className="border border-gray-300 p-4 rounded shadow-sm bg-white hover:bg-gray-50 cursor-pointer transition"
+          <div className="flex flex-wrap gap-3">
+            <button
+              onClick={() => navigate("/usuario/mis-eventos")}
+              className="btn-usuario"
             >
-              <h3 className="text-lg font-semibold text-text-main">
-                {evento.name}
-              </h3>
-              <p>📍 {evento.location}</p>
-              <p>🗓️ {new Date(evento.start).toLocaleString()}</p>
-              {evento.type === "temporal" && evento.end && (
-                <p>➡️ Hasta: {new Date(evento.end).toLocaleString()}</p>
-              )}
-              <p>👥 Aforo: {evento.capacity}</p>
-              <p>💰 Precio: {evento.price} €</p>
-            </li>
-          ))}
-        </ul>
-      )}
+              📅 Mis eventos
+            </button>
+            <button
+              onClick={() => navigate("/usuario/reseñas")}
+              className="btn-usuario"
+            >
+              ⭐ Mis reseñas
+            </button>
+            <button
+              onClick={logout}
+              className="btn-usuario bg-red-600 hover:bg-red-700"
+            >
+              🔓 Cerrar sesión
+            </button>
+          </div>
+        </div>
+
+        <hr className="border-gray-300" />
+
+        <h2 className="text-2xl font-semibold text-text-main">
+          Eventos disponibles
+        </h2>
+
+        {loading ? (
+          <p className="text-gray-600">Cargando eventos...</p>
+        ) : error ? (
+          <p className="text-red-600">{error}</p>
+        ) : eventos.length === 0 ? (
+          <p className="text-gray-600">No hay eventos disponibles.</p>
+        ) : (
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            {eventos.map((evento) => (
+              <div
+                key={evento._id}
+                onClick={() => irADetalle(evento._id)}
+                className="cursor-pointer border border-gray-200 p-5 rounded-xl shadow-sm bg-gray-50 hover:bg-white transition-all"
+              >
+                <h3 className="text-lg font-semibold text-text-main mb-2">
+                  {evento.name}
+                </h3>
+                <p className="text-sm text-gray-700">📍 {evento.location}</p>
+                <p className="text-sm text-gray-700">
+                  🗓️ {new Date(evento.start).toLocaleString()}
+                </p>
+                {evento.type === "temporal" && evento.end && (
+                  <p className="text-sm text-gray-700">
+                    ➡️ Hasta: {new Date(evento.end).toLocaleString()}
+                  </p>
+                )}
+                <p className="text-sm text-gray-700">
+                  👥 Aforo: {evento.capacity}
+                </p>
+                <p className="text-sm text-gray-700">
+                  💰 Precio: {evento.price} €
+                </p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
     </div>
   );
 }

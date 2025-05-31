@@ -55,93 +55,109 @@ export default function RegistroPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-usuario rounded shadow space-y-4">
-      <h2 className="text-2xl font-bold mb-4 text-gray-800">
-        Registro de Usuario
-      </h2>
+    <div className="min-h-screen flex items-center justify-center bg-usuario">
+      <div className="bg-white p-8 rounded-2xl shadow-lg w-full max-w-xl space-y-6 border border-gray-200">
+        <h2 className="text-3xl font-bold text-center text-gray-800">
+          Registro de Usuario
+        </h2>
 
-      <form onSubmit={handleSubmit} className="space-y-4">
-        <input
-          type="text"
-          name="name"
-          placeholder="Nombre completo"
-          value={form.name}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        {errores.name === false && (
-          <p className="text-red-600 text-sm">Nombre inválido</p>
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
+            <input
+              type="text"
+              name="name"
+              placeholder="Nombre completo"
+              value={form.name}
+              onChange={handleChange}
+              required
+              className="input"
+            />
+            {errores.name === false && (
+              <p className="text-red-600 text-sm mt-1">Nombre inválido</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="email"
+              name="email"
+              placeholder="Correo electrónico"
+              value={form.email}
+              onChange={handleChange}
+              required
+              className="input"
+            />
+            {errores.email === false && (
+              <p className="text-red-600 text-sm mt-1">Email inválido</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              name="phone"
+              placeholder="Teléfono"
+              value={form.phone}
+              onChange={handleChange}
+              required
+              className="input"
+            />
+            {errores.phone === false && (
+              <p className="text-red-600 text-sm mt-1">Teléfono inválido</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="date"
+              name="birth_date"
+              value={form.birth_date}
+              onChange={handleChange}
+              required
+              className="input"
+            />
+            {errores.birth_date === false && (
+              <p className="text-red-600 text-sm mt-1">Fecha inválida</p>
+            )}
+          </div>
+
+          <div>
+            <input
+              type="text"
+              name="address"
+              placeholder="Dirección"
+              value={form.address}
+              onChange={handleChange}
+              required
+              className="input"
+            />
+            {errores.address === false && (
+              <p className="text-red-600 text-sm mt-1">Dirección inválida</p>
+            )}
+          </div>
+
+          <div>
+            <select
+              name="gender"
+              value={form.gender}
+              onChange={handleChange}
+              className="input"
+            >
+              <option value="male">Masculino</option>
+              <option value="female">Femenino</option>
+              <option value="other">Otro</option>
+            </select>
+          </div>
+
+          <button type="submit" className="btn-usuario w-full text-lg">
+            Registrarse
+          </button>
+        </form>
+
+        {mensaje && (
+          <div className="text-center text-sm text-gray-700">{mensaje}</div>
         )}
-
-        <input
-          type="email"
-          name="email"
-          placeholder="Correo electrónico"
-          value={form.email}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        {errores.email === false && (
-          <p className="text-red-600 text-sm">Email inválido</p>
-        )}
-
-        <input
-          type="text"
-          name="phone"
-          placeholder="Teléfono"
-          value={form.phone}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        {errores.phone === false && (
-          <p className="text-red-600 text-sm">Teléfono inválido</p>
-        )}
-
-        <input
-          type="date"
-          name="birth_date"
-          value={form.birth_date}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        {errores.birth_date === false && (
-          <p className="text-red-600 text-sm">Fecha inválida</p>
-        )}
-
-        <input
-          type="text"
-          name="address"
-          placeholder="Dirección"
-          value={form.address}
-          onChange={handleChange}
-          required
-          className="input"
-        />
-        {errores.address === false && (
-          <p className="text-red-600 text-sm">Dirección inválida</p>
-        )}
-
-        <select
-          name="gender"
-          value={form.gender}
-          onChange={handleChange}
-          className="input"
-        >
-          <option value="male">Masculino</option>
-          <option value="female">Femenino</option>
-          <option value="other">Otro</option>
-        </select>
-
-        <button type="submit" className="btn-usuario w-full">
-          Registrarse
-        </button>
-      </form>
-
-      {mensaje && <p className="mt-4 text-center text-gray-800">{mensaje}</p>}
+      </div>
     </div>
   );
 }

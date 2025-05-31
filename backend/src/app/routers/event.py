@@ -162,7 +162,10 @@ async def get_event_by_id(
     db: Database = Depends(get_db),
 ):
     col = db["events"]
-    event = col.find_one({"_id": event_id})
+    if not id_length_check(event_id):
+        event = col.find_one({"_id": event_id})
+    else:
+        event = col.find_one({"_id": ObjectId(event_id)})
     if not event:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,

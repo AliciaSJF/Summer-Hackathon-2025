@@ -62,11 +62,7 @@ class ReservationModel(BaseModel):
 class ReservationCreateModel(BaseModel):
     eventId: str
     userId: str
-    status: str = "pending"  # Default to pending
-    code: Optional[str] = None
-    hashes: Optional[List[str]] = None
-    # preverifiedAt will be set automatically
-    metadata: Optional[dict] = None
+    
 
 
     

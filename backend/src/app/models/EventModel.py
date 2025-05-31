@@ -36,3 +36,7 @@ class CreateEventModel(BaseModel):
     price: Optional[float] = 0.0  # Default value for existing events
     latitude: Optional[float] = None
     longitude: Optional[float] = None
+    
+class EventWithReservationModel(EventModel):
+    event: EventModel
+    reservation_id: str

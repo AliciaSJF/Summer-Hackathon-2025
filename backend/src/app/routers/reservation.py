@@ -55,6 +55,18 @@ async def get_reservations_by_user(
     reservations = list(col.find({"userId": user_id}))
     return convert_mongo_docs(reservations)
 
+@router.get(
+    "/{reservation_id}",
+    response_model=ReservationModel,
+    summary="Obtener reserva por id",
+)
+async def get_reservation_by_id(
+    reservation_id: str,
+    db: Database = Depends(get_db),
+):
+    col = db["reservations"]
+    reservation = col.find_one({"_id": ObjectId(reservation_id)})
+    return convert_mongo_doc(reservation)
 
 @router.post(
     "",
@@ -71,15 +83,23 @@ async def create_reservation(
     # Create reservation data with all required fields
     reservation_data = payload.dict(by_alias=True)
     
+    # Get KYCInfor from the user
+    user_col = db["users"]
+    user = user_col.find_one({"_id": ObjectId(payload.userId)})
+    kyc_info = user.get("kycInfo")
+    
+    # TODO: implement otp verification.
+    
     # Add fields that are auto-generated or have defaults
     reservation_data.update({
+        "status": "completed",
         "preverifiedAt": datetime.utcnow(),
-        "otpVerified": False,
-        "kycVerified": False,
-        "locationVerified": None,
-        "kycInfo": None,
+        "otpVerified": True,
+        "kycVerified": True,
+        "locationVerified": True,
+        "kycInfo": kyc_info,
         "checkin": None,
-        "completedAt": None,
+        "completedAt": datetime.utcnow(),
         "cancelledAt": None,
         "canceledReason": None,
     })
@@ -137,11 +157,8 @@ async def do_checkin(
     # Get event latitude and longitude
     #latitude = event.get("latitude")
     #longitude = event.get("longitude")
+    # TODO: REMOVE THIS NEXT CODE IMPLEMENT REAL LOCATION VERIFICATION
 
-    
-    #
-
-    # TODO: REMOVE THIS NEXT CODE
     random_number = random.random()
     if random_number > 0.5:
         status = "anomaly"

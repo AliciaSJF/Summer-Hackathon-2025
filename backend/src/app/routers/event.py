@@ -3,7 +3,7 @@ from pymongo.database import Database
 from bson import ObjectId
 from typing import List
 from src.app.database.mongodb import get_database, get_mongo_client
-from src.app.models.EventModel import EventModel, CreateEventModel
+from src.app.models.EventModel import EventModel, CreateEventModel, EventWithReservationModel
 from dotenv import load_dotenv
 import os
 from datetime import datetime
@@ -174,8 +174,7 @@ async def get_events_for_user(
     events_col = db["events"]
 
     # Find all reservations for the user
-    reservations = list(reservations_col.find({"userId": user_id}, {"eventId": 1, "_id": 0}))
-    print("reservations:", reservations)
+    reservations = list(reservations_col.find({"userId": user_id}))
     event_ids = [res.get("eventId") for res in reservations if res.get("eventId")]
 
     if not event_ids:
@@ -184,3 +183,59 @@ async def get_events_for_user(
     # Find all events with those IDs
     events = list(events_col.find({"_id": {"$in": event_ids}}))
     return convert_mongo_docs(events)
+
+@all_events_router.get(
+    "/user/{user_id}/reservations",
+    response_model=List[EventWithReservationModel],
+    summary="Obtener todos los eventos de un usuario por su ID",
+)
+async def get_events_for_user(
+    user_id: str,
+    db: Database = Depends(get_db),
+):
+    reservations_col = db["reservations"]
+    events_col = db["events"]
+
+    # Find all reservations for the user - get both eventId and reservation _id
+    reservations = list(reservations_col.find(
+        {"userId": user_id}, 
+        {"eventId": 1, "_id": 1}
+    ))
+    print("reservations:", reservations)
+    
+    if not reservations:
+        return []
+
+    # Extract unique event IDs to minimize database queries
+    event_ids = list(set([res.get("eventId") for res in reservations if res.get("eventId")]))
+    
+    if not event_ids:
+        return []
+
+    # Find all events with those IDs
+    events = list(events_col.find({"_id": {"$in": event_ids}}))
+    
+    # Convert events to dict for easy lookup by eventId
+    events_dict = {}
+    for event in events:
+        event_converted = convert_mongo_doc(event)
+        events_dict[event_converted["_id"]] = event_converted
+    
+    # Create the paired list: each reservation gets paired with its event
+    events_with_reservation_id = []
+    for reservation in reservations:
+        event_id = reservation.get("eventId")
+        reservation_id = str(reservation.get("_id"))
+        
+        if event_id in events_dict:
+            event_data = events_dict[event_id]
+            
+            # Create the paired structure
+            paired_data = {
+                **event_data,  # Include all event fields
+                "event": event_data,  # Also include as nested event object
+                "reservation_id": reservation_id
+            }
+            events_with_reservation_id.append(paired_data)
+    
+    return events_with_reservation_id

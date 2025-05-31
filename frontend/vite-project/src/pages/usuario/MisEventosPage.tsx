@@ -22,21 +22,25 @@ export default function MisEventosPage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
-  const usuario = JSON.parse(localStorage.getItem("usuario") || '{"_id": "683b4bfdebc0428122dd8146"}');
+  const usuario = JSON.parse(
+    localStorage.getItem("usuario") || '{"_id": "683b4bfdebc0428122dd8146"}'
+  );
 
   useEffect(() => {
     console.log("usuario:", usuario);
     fetch(`http://localhost:8001/events/user/${usuario._id}/reservations`)
       .then((res) => {
-        let response = res.json();
-      console.log(response);
-    return response})
+        const response = res.json();
+        console.log(response);
+        return response;
+      })
       .then(setEventos)
       .catch((err) => {
         console.error(err);
         setError("❌ Error al cargar eventos");
       })
-      .finally(() => {setLoading(false)
+      .finally(() => {
+        setLoading(false);
       });
   }, []);
 
@@ -46,7 +50,6 @@ export default function MisEventosPage() {
 
   return (
     <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md space-y-6">
-
       <h2 className="text-2xl font-semibold mb-4">Tus eventos</h2>
 
       {loading ? (
@@ -60,7 +63,9 @@ export default function MisEventosPage() {
           {eventos.map((evento) => (
             <li
               key={evento._id}
-              onClick={() => handleReservationClick(evento.reservation_id, evento._id)}
+              onClick={() =>
+                handleReservationClick(evento.reservation_id, evento._id)
+              }
               className="border p-4 rounded shadow-sm bg-gray-50 hover:bg-blue-50 cursor-pointer transition"
             >
               <h3 className="text-lg font-semibold">{evento.name}</h3>
@@ -79,4 +84,3 @@ export default function MisEventosPage() {
     </div>
   );
 }
-

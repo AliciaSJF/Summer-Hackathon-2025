@@ -18,6 +18,16 @@ export default function UsuarioHomePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
 
+  const defaultUsuario = {
+    _id: "683b55e323204f24b8f09aef",
+    name: "Marta Galeano Grijalba",
+    email: "csp.nacintegrations@nokia.com",
+  };
+
+  if (!localStorage.getItem("usuario")) {
+    localStorage.setItem("usuario", JSON.stringify(defaultUsuario));
+  }
+
   const usuario = JSON.parse(localStorage.getItem("usuario") || "{}");
 
   useEffect(() => {
@@ -33,7 +43,7 @@ export default function UsuarioHomePage() {
 
   const logout = () => {
     localStorage.removeItem("usuario");
-    navigate("/usuario/login");
+    navigate("/usuario/registro");
   };
 
   const irADetalle = (id: string) => {
@@ -41,51 +51,57 @@ export default function UsuarioHomePage() {
   };
 
   return (
-    <div className="p-6 max-w-4xl mx-auto bg-white rounded-lg shadow-md space-y-6">
-      <h1 className="text-3xl font-bold text-gray-800">
+    <div className="p-6 max-w-4xl mx-auto bg-usuario rounded-lg shadow-md space-y-6">
+      <h1 className="text-3xl font-bold text-text-main">
         Bienvenido, {usuario?.name || "usuario"}
       </h1>
 
       <div className="flex flex-wrap gap-4">
-        <a
-          href="/usuario/mis-eventos"
-          className="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700"
+        <button
+          onClick={() => navigate("/usuario/mis-eventos")}
+          className="btn-usuario"
         >
           📅 Mis eventos
-        </a>
-        <a
-          href="/usuario/reseñas"
-          className="bg-purple-600 text-white px-4 py-2 rounded hover:bg-purple-700"
+        </button>
+        <button
+          onClick={() => navigate("/usuario/reseñas")}
+          className="btn-usuario"
         >
           ⭐ Mis reseñas
-        </a>
+        </button>
         <button
           onClick={logout}
-          className="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700"
+          className="btn-usuario bg-red-600 hover:bg-red-700"
         >
           🔓 Cerrar sesión
         </button>
       </div>
 
-      <hr className="my-6" />
+      <hr className="my-6 border-gray-400" />
 
-      <h2 className="text-2xl font-semibold mb-4">Eventos disponibles</h2>
+      <h2 className="text-2xl font-semibold text-text-main">
+        Eventos disponibles
+      </h2>
 
       {loading ? (
-        <p>Cargando eventos...</p>
+        <p className="text-gray-700">Cargando eventos...</p>
       ) : error ? (
         <p className="text-red-600">{error}</p>
       ) : eventos.length === 0 ? (
-        <p>No hay eventos disponibles en este momento.</p>
+        <p className="text-gray-700">
+          No hay eventos disponibles en este momento.
+        </p>
       ) : (
         <ul className="space-y-4">
           {eventos.map((evento) => (
             <li
               key={evento._id}
               onClick={() => irADetalle(evento._id)}
-              className="border p-4 rounded shadow-sm bg-gray-50 hover:bg-blue-50 cursor-pointer transition"
+              className="border border-gray-300 p-4 rounded shadow-sm bg-white hover:bg-gray-50 cursor-pointer transition"
             >
-              <h3 className="text-lg font-semibold">{evento.name}</h3>
+              <h3 className="text-lg font-semibold text-text-main">
+                {evento.name}
+              </h3>
               <p>📍 {evento.location}</p>
               <p>🗓️ {new Date(evento.start).toLocaleString()}</p>
               {evento.type === "temporal" && evento.end && (

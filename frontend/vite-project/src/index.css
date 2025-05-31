@@ -3,3 +3,46 @@
 .input {
   @apply w-full p-2 border rounded bg-gray-50 focus:outline-none focus:ring focus:border-blue-300;
 }
+
+:root {
+  /* Usuario (MongoDB) */
+  --color-mongo-primary: #13aa52;
+  --color-mongo-dark: #116149;
+  --color-mongo-light: #e8f5ec;
+
+  /* Empresa (Telefónica) */
+  --color-telefonica-primary: #00b6f1;
+  --color-telefonica-dark: #00568b;
+  --color-telefonica-light: #e6f4fb;
+
+  --text-main: #1b1b1b;
+}
+
+.btn-usuario {
+  background-color: var(--color-mongo-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.btn-usuario:hover {
+  background-color: var(--color-mongo-dark);
+}
+
+.btn-empresa {
+  background-color: var(--color-telefonica-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.btn-empresa:hover {
+  background-color: var(--color-telefonica-dark);
+}
+
+.bg-usuario {
+  background-color: var(--color-mongo-light);
+}
+.bg-empresa {
+  background-color: var(--color-telefonica-light);
+}

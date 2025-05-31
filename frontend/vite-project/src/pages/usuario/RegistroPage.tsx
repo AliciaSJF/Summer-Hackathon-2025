@@ -39,11 +39,11 @@ export default function RegistroPage() {
       if (data === true) {
         localStorage.setItem(
           "usuario",
-          JSON.stringify({ name: form.name, email: form.email })
+          JSON.stringify({ name: form.name, email: form.email, _id: data.id })
         );
         setMensaje("✅ Registro completado correctamente");
         setErrores({});
-        navigate("/usuario/home"); // Redirige al home del usuario
+        navigate("/usuario/home");
       } else if (typeof data === "object") {
         setErrores(data);
         setMensaje("❌ Algunos campos no son válidos.");
@@ -55,8 +55,10 @@ export default function RegistroPage() {
   };
 
   return (
-    <div className="max-w-xl mx-auto p-6 bg-white rounded shadow space-y-4">
-      <h2 className="text-2xl font-bold mb-4">Registro de Usuario</h2>
+    <div className="max-w-xl mx-auto p-6 bg-usuario rounded shadow space-y-4">
+      <h2 className="text-2xl font-bold mb-4 text-gray-800">
+        Registro de Usuario
+      </h2>
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <input
@@ -134,15 +136,12 @@ export default function RegistroPage() {
           <option value="other">Otro</option>
         </select>
 
-        <button
-          type="submit"
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
+        <button type="submit" className="btn-usuario w-full">
           Registrarse
         </button>
       </form>
 
-      {mensaje && <p className="mt-4 text-center">{mensaje}</p>}
+      {mensaje && <p className="mt-4 text-center text-gray-800">{mensaje}</p>}
     </div>
   );
 }

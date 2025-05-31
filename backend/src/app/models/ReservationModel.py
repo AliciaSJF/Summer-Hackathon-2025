@@ -13,18 +13,17 @@ class ReviewSubdoc(BaseModel):
     metadata: Optional[dict] = None
 
 class CheckinSubdoc(BaseModel):
-    status: str  # "pending" | "completed" | "anomaly"
+    status: str  # "pending" | "completed" | "anomaly" | "trouble" ESTE HACE REFERENCIA AL STATUS DEL CHECKIN, NO AL RESERVA
     requestedAt: datetime = Field(default_factory=datetime.utcnow)
     otpVerified: Optional[bool] = None
     locationVerified: Optional[bool] = None
     kycVerified: Optional[bool] = None
     completedAt: Optional[datetime] = None
     review: Optional[ReviewSubdoc] = None
+    previous_anomaly_checkins: Optional[bool] = None
 
 class AnomalySubdocModelDTO(BaseModel):
-    status: str  # "pending" | "completed" | "anomaly"
-    requestedAt: datetime = Field(default_factory=datetime.utcnow)
-    completedAt: Optional[datetime] = None
+    status: str  # "pending" | "completed" | "anomaly" | "trouble"
     
 
 class KYCModel(BaseModel):
@@ -42,13 +41,13 @@ class ReservationModel(BaseModel):
     id: str = Field(default_factory=uuid.uuid4, alias="_id")
     eventId: str
     userId: str
-    status: str  # "pending" | "completed" | "anomaly"
-    code: str
+    status: str  # "pending" | "completed" | "anomaly" ESTE HACE REFERENCIA AL STATUS DE LA RESERVA, NO AL CHECKIN
+    code: Optional[str] = None
     hashes: Optional[List[str]] = None
     preverifiedAt: datetime = Field(default_factory=datetime.utcnow)
-    otpVerified: bool
+    otpVerified: bool = False  # Default value for new reservations
     locationVerified: Optional[bool] = None
-    kycVerified: bool
+    kycVerified: bool = False  # Default value for new reservations
     kycInfo: Optional[KYCModel] = None
     checkin: Optional[CheckinSubdoc] = None
     completedAt: Optional[datetime] = None
@@ -63,10 +62,11 @@ class ReservationModel(BaseModel):
 class ReservationCreateModel(BaseModel):
     eventId: str
     userId: str
-    status: str  # "pending" | "completed" | "anomaly"
-    code: str
+    status: str = "pending"  # Default to pending
+    code: Optional[str] = None
     hashes: Optional[List[str]] = None
-    preverifiedAt: datetime = Field(default_factory=datetime.utcnow)
+    # preverifiedAt will be set automatically
+    metadata: Optional[dict] = None
 
 
     

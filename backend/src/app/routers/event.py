@@ -19,8 +19,15 @@ def get_db() -> Database:
 
 def convert_mongo_doc(doc):
     """Convert MongoDB document to format expected by Pydantic models"""
-    if doc and "_id" in doc:
-        doc["_id"] = str(doc["_id"])
+    if doc:
+        # Convert _id field
+        if "_id" in doc:
+            doc["_id"] = str(doc["_id"])
+        
+        # Convert businessId field if it's an ObjectId
+        if "businessId" in doc and isinstance(doc["businessId"], ObjectId):
+            doc["businessId"] = str(doc["businessId"])
+    
     return doc
 
 def convert_mongo_docs(docs):
@@ -136,7 +143,7 @@ all_events_router = APIRouter(prefix="/events", tags=["events"])
 async def get_all_events(
     db: Database = Depends(get_db),
 ):
-    col = db["events"]
+    col = db["events"]  
     events = list(col.find({}))
     return convert_mongo_docs(events)
 

@@ -44,3 +44,8 @@ class UserCreateModel(BaseModel):
     birth_date: datetime 
     address: Optional[str] = None
     gender : Optional[str] = None
+    
+class UserForRegistrationModel(BaseModel):
+    id: str = Field(default_factory=lambda: str(uuid.uuid4()), alias="_id")
+    name: str
+    email: str

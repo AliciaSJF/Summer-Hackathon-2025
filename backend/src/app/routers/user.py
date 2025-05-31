@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, status, HTTPException
 from pymongo.database import Database
 from src.app.database.mongodb import get_database, get_mongo_client
 from dotenv import load_dotenv
-from src.app.models.UserModel import UserCreateModel, UserModel, KYCModel
+from src.app.models.UserModel import UserCreateModel, UserModel, KYCModel, UserForRegistrationModel 
 from src.app.services.api_calls import run_kyc_match, call_api
 import os
 from datetime import datetime
@@ -24,7 +24,7 @@ def convert_mongo_doc(doc):
     return doc
 
 # Create user
-@router.post("/", response_model=bool | dict, status_code=status.HTTP_201_CREATED, summary="6. Crear usuario")
+@router.post("/", response_model=UserForRegistrationModel | dict, status_code=status.HTTP_201_CREATED, summary="6. Crear usuario")
 async def create_user(
     payload: UserCreateModel,
     db: Database = Depends(get_db),
@@ -101,8 +101,12 @@ async def create_user(
         
         result = col.insert_one(user_data)
         
+        # Obtain the user id
+        user_id = result.inserted_id
+        # Create a UserForRegistrationModel
+        user_for_registration = UserForRegistrationModel(id=user_id, name=payload.name, email=payload.email)
         # Return True if user was created successfully
-        return True
+        return user_for_registration
         
     except Exception as e:
         # If KYC validation or user creation fails, return False

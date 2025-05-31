@@ -1,1 +1,5 @@
 @import "tailwindcss";
+
+.input {
+  @apply w-full p-2 border rounded bg-gray-50 focus:outline-none focus:ring focus:border-blue-300;
+}

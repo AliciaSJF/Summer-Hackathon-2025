@@ -115,12 +115,11 @@ async def do_checkin(
     user = user_col.find_one({"_id": ObjectId(user_id)})
     previous_anomaly_checkins = user.get("anomalyCheckins", 0)
     # TODO: IMPLEMENT THIS REAL LOGIC
-    #if previous_anomaly_checkins > 0:
-    #    previous_anomaly_checkins = True
-    #else:
-    #    previous_anomaly_checkins = False
-    # Random anomaly checkins for testing boolean
-    previous_anomaly_checkins = random.random() > 0.5
+    if previous_anomaly_checkins > 0:
+        previous_anomaly_checkins = True
+    else:
+        previous_anomaly_checkins = False
+
     
     # If random > 0.5, set status to anomaly, else set to completed
     # TODO: Implement real checkin verifyting KYC, OTP, LOCATION

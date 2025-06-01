@@ -1,0 +1,14 @@
+{
+  "type": "histogram",
+  "title": "User Count by Reliability Group",
+  "x": [
+    "Unknown",
+    "Very High"
+  ],
+  "y": [
+    8,
+    3
+  ],
+  "xaxis_title": "Reliability Group",
+  "yaxis_title": "Number of Users"
+}

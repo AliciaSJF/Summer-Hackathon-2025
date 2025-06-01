@@ -1,0 +1,92 @@
+[
+  {
+    "subgroup": "All",
+    "x": [
+      "Children",
+      "Youth",
+      "Adult",
+      "Senior"
+    ],
+    "y": [
+      25.0,
+      18.75,
+      43.75,
+      12.5
+    ]
+  },
+  {
+    "subgroup": "Very Low",
+    "x": [
+      "Children",
+      "Youth",
+      "Adult",
+      "Senior"
+    ],
+    "y": [
+      0.0,
+      0.0,
+      100.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "Low",
+    "x": [
+      "Children",
+      "Youth",
+      "Adult",
+      "Senior"
+    ],
+    "y": [
+      50.0,
+      0.0,
+      50.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "Normal",
+    "x": [
+      "Children",
+      "Youth",
+      "Adult",
+      "Senior"
+    ],
+    "y": [
+      0.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "High",
+    "x": [
+      "Children",
+      "Youth",
+      "Adult",
+      "Senior"
+    ],
+    "y": [
+      100.0,
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "Very High",
+    "x": [
+      "Children",
+      "Youth",
+      "Adult",
+      "Senior"
+    ],
+    "y": [
+      10.0,
+      30.0,
+      40.0,
+      20.0
+    ]
+  }
+]

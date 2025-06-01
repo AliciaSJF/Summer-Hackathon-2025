@@ -1,0 +1,16 @@
+{
+  "x": [
+    "Very Low",
+    "Low",
+    "Normal",
+    "High",
+    "Very High"
+  ],
+  "y": [
+    2,
+    2,
+    0,
+    1,
+    12
+  ]
+}

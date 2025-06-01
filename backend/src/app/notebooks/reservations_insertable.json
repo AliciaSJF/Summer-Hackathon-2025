@@ -1,0 +1,192 @@
+[
+  {
+    "_id": "2285823b-5eac-4d03-a35e-6e6d955724fe",
+    "eventId": "9a3ab9bb-674a-48a6-b256-d6726ebdbf80",
+    "userId": "599eb068-342c-43a8-b1fb-2897c7daaa9a",
+    "status": "completed",
+    "code": "RES-8588",
+    "hashes": null,
+    "preverifiedAt": "2025-05-31 13:57:47.677003",
+    "otpVerified": true,
+    "locationVerified": true,
+    "kycVerified": true,
+    "kycInfo": {
+      "_id": "e508a9ee-4648-48d6-8d57-aeb316ff564b",
+      "name": "Lucía Ramos",
+      "email": "lucia@mail.com",
+      "phone": "600111222",
+      "createdAt": "2025-05-31 13:57:47.676900"
+    },
+    "checkin": {
+      "status": "completed",
+      "requestedAt": "2025-05-31 13:57:47.676942",
+      "otpVerified": true,
+      "locationVerified": true,
+      "kycVerified": true,
+      "completedAt": "2025-05-31 13:57:47.676916",
+      "review": {
+        "rating": 5,
+        "comment": "Muy buena experiencia, repetiría.",
+        "createdAt": "2025-05-31 13:57:47.676925",
+        "metadata": null
+      }
+    },
+    "completedAt": "2025-05-31 13:57:47.676951",
+    "cancelledAt": null,
+    "canceledReason": null,
+    "metadata": {
+      "pricePaid": 10.0,
+      "extras": "Ninguno"
+    }
+  },
+  {
+    "_id": "e81fec83-0083-400b-b6f8-837b7a256cd1",
+    "eventId": "b7d73859-a72a-4f76-8189-2515d21b71cf",
+    "userId": "985e0bfd-1949-4242-9ca1-6f638e70216a",
+    "status": "pending",
+    "code": "RES-8032",
+    "hashes": null,
+    "preverifiedAt": "2025-05-31 13:57:47.677162",
+    "otpVerified": false,
+    "locationVerified": true,
+    "kycVerified": false,
+    "kycInfo": {
+      "_id": "03056886-8f6f-4a6e-9828-7cfa7098dadf",
+      "name": "Carlos Pérez",
+      "email": "carlos@mail.com",
+      "phone": "600222333",
+      "createdAt": "2025-05-31 13:57:47.677132"
+    },
+    "checkin": {
+      "status": "pending",
+      "requestedAt": "2025-05-31 13:57:47.677137",
+      "otpVerified": false,
+      "locationVerified": true,
+      "kycVerified": false,
+      "completedAt": null,
+      "review": null
+    },
+    "completedAt": null,
+    "cancelledAt": null,
+    "canceledReason": null,
+    "metadata": {
+      "pricePaid": 28.0,
+      "extras": "Ninguno"
+    }
+  },
+  {
+    "_id": "d00f84dc-688d-4d85-88fd-87e3657539b3",
+    "eventId": "8d49143a-a226-4482-80b3-02fd7db46974",
+    "userId": "9ef4987e-565f-43f6-98b8-33891bda2b46",
+    "status": "completed",
+    "code": "RES-5068",
+    "hashes": null,
+    "preverifiedAt": "2025-05-31 13:57:47.677304",
+    "otpVerified": true,
+    "locationVerified": true,
+    "kycVerified": true,
+    "kycInfo": {
+      "_id": "6976124a-34da-4be7-a398-9f6101ff3659",
+      "name": "Ana Torres",
+      "email": "ana@mail.com",
+      "phone": "600333444",
+      "createdAt": "2025-05-31 13:57:47.677256"
+    },
+    "checkin": {
+      "status": "completed",
+      "requestedAt": "2025-05-31 13:57:47.677274",
+      "otpVerified": true,
+      "locationVerified": true,
+      "kycVerified": true,
+      "completedAt": "2025-05-31 13:57:47.677266",
+      "review": {
+        "rating": 3,
+        "comment": "Muy buena experiencia, repetiría.",
+        "createdAt": "2025-05-31 13:57:47.677272",
+        "metadata": null
+      }
+    },
+    "completedAt": "2025-05-31 13:57:47.677278",
+    "cancelledAt": null,
+    "canceledReason": null,
+    "metadata": {
+      "pricePaid": 30.0,
+      "extras": "Ninguno"
+    }
+  },
+  {
+    "_id": "e05c84c2-7d51-42f0-a0d4-4b0786596fc9",
+    "eventId": "69111f47-a09d-40a1-8586-feac04cf7222",
+    "userId": "b39279fe-bda2-4267-b268-41eced3d0b4a",
+    "status": "anomaly",
+    "code": "RES-6567",
+    "hashes": null,
+    "preverifiedAt": "2025-05-31 13:57:47.677414",
+    "otpVerified": true,
+    "locationVerified": true,
+    "kycVerified": false,
+    "kycInfo": {
+      "_id": "7b7af654-808c-4475-9f00-d7fb31641ade",
+      "name": "Marta Gómez",
+      "email": "marta@mail.com",
+      "phone": "600444555",
+      "createdAt": "2025-05-31 13:57:47.677369"
+    },
+    "checkin": {
+      "status": "anomaly",
+      "requestedAt": "2025-05-31 13:57:47.677375",
+      "otpVerified": true,
+      "locationVerified": true,
+      "kycVerified": false,
+      "completedAt": null,
+      "review": null
+    },
+    "completedAt": null,
+    "cancelledAt": "2025-05-31 13:57:47.677378",
+    "canceledReason": "Problema en el check-in",
+    "metadata": {
+      "pricePaid": 25.0,
+      "extras": "Ninguno"
+    }
+  },
+  {
+    "_id": "98ba9e9b-d447-4d0c-92ed-2cf7e7f6686f",
+    "eventId": "0569e859-6c19-428a-8d45-675e2b518c5d",
+    "userId": "5e473652-5e75-4b32-a4e8-f3f98d23d9a2",
+    "status": "completed",
+    "code": "RES-9600",
+    "hashes": null,
+    "preverifiedAt": "2025-05-31 13:57:47.677520",
+    "otpVerified": true,
+    "locationVerified": false,
+    "kycVerified": true,
+    "kycInfo": {
+      "_id": "bcab6a46-bb43-4964-8c7d-9a40ec06bc63",
+      "name": "Javier Martín",
+      "email": "javier@mail.com",
+      "phone": "600555666",
+      "createdAt": "2025-05-31 13:57:47.677479"
+    },
+    "checkin": {
+      "status": "completed",
+      "requestedAt": "2025-05-31 13:57:47.677491",
+      "otpVerified": true,
+      "locationVerified": true,
+      "kycVerified": true,
+      "completedAt": "2025-05-31 13:57:47.677481",
+      "review": {
+        "rating": 4,
+        "comment": "Muy buena experiencia, repetiría.",
+        "createdAt": "2025-05-31 13:57:47.677488",
+        "metadata": null
+      }
+    },
+    "completedAt": "2025-05-31 13:57:47.677493",
+    "cancelledAt": null,
+    "canceledReason": null,
+    "metadata": {
+      "pricePaid": 0.0,
+      "extras": "Ninguno"
+    }
+  }
+]

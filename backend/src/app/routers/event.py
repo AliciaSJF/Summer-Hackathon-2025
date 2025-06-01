@@ -10,6 +10,12 @@ from datetime import datetime
 
 load_dotenv()
 
+def id_length_check(id: str):
+    """Check if ID is a string (>26 chars) or ObjectId (<=26 chars)"""
+    if len(str(id)) > 26:
+        return False  # String ID
+    return True  # ObjectId
+
 router = APIRouter(prefix="/businesses/{business_id}/events", tags=["events"])
 
 def get_db() -> Database:
@@ -84,7 +90,11 @@ async def get_event_by_id(
 ):
     col = db["events"]
     # Since EventModel uses string IDs (uuid4), not ObjectIds
-    event = col.find_one({"_id": event_id, "businessId": business_id})
+    if not id_length_check(event_id):
+        event = col.find_one({"_id": event_id, "businessId": business_id})
+    else:
+        event = col.find_one({"_id": ObjectId(event_id), "businessId": business_id})
+        
     if not event:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -158,7 +168,10 @@ async def get_event_by_id(
     db: Database = Depends(get_db),
 ):
     col = db["events"]
-    event = col.find_one({"_id": event_id})
+    if not id_length_check(event_id):
+        event = col.find_one({"_id": event_id})
+    else:
+        event = col.find_one({"_id": ObjectId(event_id)})
     if not event:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
@@ -187,8 +200,31 @@ async def get_events_for_user(
     if not event_ids:
         return []
 
-    # Find all events with those IDs
-    events = list(events_col.find({"_id": {"$in": event_ids}}))
+    # Separate by ID type
+    string_ids = []    # For UUID strings (>26 chars)
+    object_ids = []    # For ObjectIds (<=26 chars)
+
+    for event_id in event_ids:
+        if id_length_check(event_id):
+            object_ids.append(ObjectId(event_id))  # Convert to ObjectId
+        else:
+            string_ids.append(event_id)            # Keep as string
+
+    # Query separately
+    if string_ids:
+        string_events = events_col.find({"_id": {"$in": string_ids}})
+    if object_ids:  
+        object_events = events_col.find({"_id": {"$in": object_ids}})
+
+    # Combine results
+    events = []
+    if string_ids:
+        string_events = list(string_events)
+        events.extend(string_events)
+    if object_ids:
+        object_events = list(object_events)
+        events.extend(object_events)
+
     return convert_mongo_docs(events)
 
 @all_events_router.get(
@@ -205,22 +241,43 @@ async def get_events_for_user(
 
     # Find all reservations for the user - get both eventId and reservation _id
     reservations = list(reservations_col.find(
-        {"userId": user_id}, 
-        {"eventId": 1, "_id": 1}
+        {"userId": user_id}
     ))
-    print("reservations:", reservations)
+    print("reservations:", len(reservations))
     
     if not reservations:
         return []
 
-    # Extract unique event IDs to minimize database queries
-    event_ids = list(set([res.get("eventId") for res in reservations if res.get("eventId")]))
+    # Extract unique event IDs to minimize database queries 
+    event_ids = list([res.get("eventId") for res in reservations if res.get("eventId")])
     
     if not event_ids:
         return []
 
-    # Find all events with those IDs
-    events = list(events_col.find({"_id": {"$in": event_ids}}))
+    # Separate by ID type
+    string_ids = []    # For UUID strings (>26 chars)
+    object_ids = []    # For ObjectIds (<=26 chars)
+
+    for event_id in event_ids:
+        if id_length_check(event_id):
+            object_ids.append(ObjectId(event_id))  # Convert to ObjectId
+        else:
+            string_ids.append(event_id)            # Keep as string
+
+    # Query separately
+    if string_ids:
+        string_events = events_col.find({"_id": {"$in": string_ids}})
+    if object_ids:  
+        object_events = events_col.find({"_id": {"$in": object_ids}})
+
+    # Combine results
+    events = []
+    if string_ids:
+        string_events = list(string_events)
+        events.extend(string_events)
+    if object_ids:
+        object_events = list(object_events)
+        events.extend(object_events)
     
     # Convert events to dict for easy lookup by eventId
     events_dict = {}
@@ -244,5 +301,17 @@ async def get_events_for_user(
                 "reservation_id": reservation_id
             }
             events_with_reservation_id.append(paired_data)
-    
+    print(len(events_with_reservation_id))
     return events_with_reservation_id
+
+# Endpoint for personal recommendations with GenAI
+@all_events_router.get(
+    "/recommendations/{user_id}",
+    response_model=List[EventModel],
+    summary="Obtener recomendaciones de eventos para un usuario",
+)
+async def get_recommendations(
+    user_id: str,
+    db: Database = Depends(get_db),
+):
+    pass

@@ -3,15 +3,30 @@ from pymongo.database import Database
 from bson import ObjectId
 from src.app.services.api_calls import run_kyc_match, call_api
 from src.app.database.mongodb import get_database, get_mongo_client
-from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc, AnomalySubdocModelDTO, ReservationCreateModel
+from src.app.models.ReservationModel import ReservationModel, CheckinSubdoc, ReviewSubdoc, AnomalySubdocModelDTO, ReservationCreateModel, ReviewCreationModel
+from src.app.models.ReviewEmbeddingModel import ReviewEmbeddingModel
 from dotenv import load_dotenv
 from typing import List
 from datetime import datetime
 import os
 import random
+from langchain_openai import AzureOpenAIEmbeddings
+
 router = APIRouter(prefix="/reservations", tags=["reservations"])
 
+
+
 load_dotenv()
+
+embeddings = AzureOpenAIEmbeddings(model="text-embedding-3-large")
+
+def generate_embedding(text):
+    return embeddings.embed_query(text)
+
+def id_length_check(id: str):
+    if len(id) > 26:
+        return False
+    return True
 
 def get_db() -> Database:
     uri = os.getenv("MONGODB_URI")
@@ -86,9 +101,12 @@ async def create_reservation(
     
     # Get KYCInfor from the user
     user_col = db["users"]
-    user = user_col.find_one({"_id": ObjectId(payload.userId)})
-    kyc_info = user.get("kycInfo")
-    
+    if not id_length_check(payload.userId):
+        user = user_col.find_one({"_id": payload.userId})
+    else:
+        user = user_col.find_one({"_id": ObjectId(payload.userId)})
+        
+    kyc_info = user.get("kyc")
     # TODO: implement otp verification.
     
     # Add fields that are auto-generated or have defaults
@@ -247,7 +265,7 @@ async def create_trouble(
 )
 async def create_review(
     reservation_id: str,
-    payload: ReviewSubdoc,
+    payload: ReviewCreationModel,
     db: Database = Depends(get_db),
 ):
     col = db["reservations"]
@@ -255,8 +273,39 @@ async def create_review(
     if not res or not res.get("checkin") or res["checkin"].get("status") != "completed":
         raise HTTPException(400, "Check-in no válido para reseñar")
     review = payload.dict()
+    
     col.update_one(
         {"_id": ObjectId(reservation_id)},
         {"$set": {"checkin.review": review}}
     )
-    return review 
+    
+    business_col = db["businesses"]
+    
+    # Get the event first to get the businessId
+    events_col = db["events"]
+    if not id_length_check(res.get("eventId")):
+        event = events_col.find_one({"_id": res.get("eventId")})
+    else:
+        event = events_col.find_one({"_id": ObjectId(res.get("eventId"))})
+        
+    if not event:
+        raise HTTPException(404, "Evento no encontrado")
+    
+    business_id = event.get("businessId")
+    
+    
+    # Create review embedding
+    review_embedding = ReviewEmbeddingModel(
+        reservationId=reservation_id,
+        userId=res.get("userId"),
+        eventId=res.get("eventId"),
+        businessId=business_id,
+        rating=review.get("rating"),
+        text=review.get("comment"),
+        embedding=generate_embedding(review.get("comment"))
+    )
+    
+    # From openai, get the embedding. 
+    
+    return review
+

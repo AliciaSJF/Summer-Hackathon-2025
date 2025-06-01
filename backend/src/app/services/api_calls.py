@@ -30,8 +30,8 @@ def call_api(phone: str, scope: str, user_data: dict = None) -> dict:
         raise Exception("Scope no válido")
     return result
 
-async def verify_location(phone:str , code:str, latitude, longitude) -> dict:
-    print("Verificando ubicación del número:", phone, "con código:", code)
+def verify_location(phone:str , code:str, latitude, longitude) -> dict:
+    print("Verificando ubicación del número:", phone)
     client = DeviceLocation(credentials=credentials, phone_number=phone)
     #result = client.verify(40.5150, -3.6640, 10, phone)
     #result = client.verify(40.442242,-3.697463, 2, phone)
@@ -40,7 +40,6 @@ async def verify_location(phone:str , code:str, latitude, longitude) -> dict:
     return result
 
 async def verify_number(code: str, phone: str) ->  dict:
-    print("Verificando número:", phone, "con código:", code)
     client = NumberVerification(credentials, code)
     result = await client.verify(phone)
     return result.to_dict()

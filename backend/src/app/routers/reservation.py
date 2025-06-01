@@ -186,6 +186,7 @@ async def do_checkin(
 
     latitude = event.get("latitude")
     longitude = event.get("longitude")
+    
     result = call_api(
         phone=phone,
         scope="dpv:FraudPreventionAndDetection#device-location-read",
@@ -194,9 +195,14 @@ async def do_checkin(
             "longitude": longitude
         }
     )
+    
     print("Location verification result:", result)
 
     # TODO: REMOVE THIS NEXT CODE IMPLEMENT REAL LOCATION VERIFICATION
+    if result:
+        status = "completed"
+    else:
+        status = "anomaly"
     
     updated_checkin = {
         "status": status,

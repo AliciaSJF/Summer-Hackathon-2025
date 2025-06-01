@@ -54,6 +54,9 @@ async def create_event(
     col = db["events"]
     payload.businessId = business_id
     new = payload.dict(by_alias=True)
+    # Add latitude and longitude to the event: 40.515, -3.664
+    new["latitude"] = 40.515
+    new["longitude"] = -3.664
     result = col.insert_one(new)
     
     # Convert ObjectId to string for the response

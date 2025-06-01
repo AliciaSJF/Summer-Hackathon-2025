@@ -273,7 +273,7 @@ async def create_review(
     if not res or not res.get("checkin") or res["checkin"].get("status") != "completed":
         raise HTTPException(400, "Check-in no válido para reseñar")
     review = payload.dict()
-    
+    review["createdAt"] = datetime.utcnow()
     col.update_one(
         {"_id": ObjectId(reservation_id)},
         {"$set": {"checkin.review": review}}
@@ -298,6 +298,12 @@ async def create_review(
     else:
         reservation_id = reservation_id
     
+    print("reservation_id:", reservation_id)
+    print("res.get('userId'):", res.get("userId"))
+    print("res.get('eventId'):", res.get("eventId"))
+    print("business_id:", business_id)
+    print("review:", review)
+    
     # Create review embedding
     review_embedding = ReviewEmbeddingModel(
         reservationId=reservation_id,
@@ -309,9 +315,10 @@ async def create_review(
         embedding=generate_embedding(review.get("comment"))
     )
     
+    print("review_embedding:", review_embedding)
+    
     # Save the embedding in the database. 
-    review_embedding_col = db["review_embeddings"]
+    review_embedding_col = db["reviewEmbeddings"]
     review_embedding_col.insert_one(review_embedding.dict())
     
     return review
-

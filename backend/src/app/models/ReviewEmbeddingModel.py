@@ -6,7 +6,7 @@ from pymongo.database import Database
 import uuid
 
 class ReviewEmbeddingModel(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
     reservationId: str
     userId: str
     eventId: str

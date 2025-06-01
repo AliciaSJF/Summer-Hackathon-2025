@@ -81,7 +81,16 @@ export default function DetalleReservaPage() {
 
       if (res.ok) {
         const updated = await res.json();
-        setReserva(updated);
+        // Refresh the review into reservation.checkin.review with the updated review
+        if (reserva?.checkin) {
+          setReserva({
+            ...reserva,
+            checkin: {
+              ...reserva.checkin,
+              review: updated,
+            },
+          });
+        }
         setMensaje("✅ Reseña enviada correctamente");
       } else {
         setMensaje("❌ Error al enviar la reseña");

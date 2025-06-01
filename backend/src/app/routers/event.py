@@ -11,9 +11,10 @@ from datetime import datetime
 load_dotenv()
 
 def id_length_check(id: str):
-    if len(id) > 26:
-        return False
-    return True
+    """Check if ID is a string (>26 chars) or ObjectId (<=26 chars)"""
+    if len(str(id)) > 26:
+        return False  # String ID
+    return True  # ObjectId
 
 router = APIRouter(prefix="/businesses/{business_id}/events", tags=["events"])
 
@@ -199,8 +200,31 @@ async def get_events_for_user(
     if not event_ids:
         return []
 
-    # Find all events with those IDs
-    events = list(events_col.find({"_id": {"$in": event_ids}}))
+    # Separate by ID type
+    string_ids = []    # For UUID strings (>26 chars)
+    object_ids = []    # For ObjectIds (<=26 chars)
+
+    for event_id in event_ids:
+        if id_length_check(event_id):
+            object_ids.append(ObjectId(event_id))  # Convert to ObjectId
+        else:
+            string_ids.append(event_id)            # Keep as string
+
+    # Query separately
+    if string_ids:
+        string_events = events_col.find({"_id": {"$in": string_ids}})
+    if object_ids:  
+        object_events = events_col.find({"_id": {"$in": object_ids}})
+
+    # Combine results
+    events = []
+    if string_ids:
+        string_events = list(string_events)
+        events.extend(string_events)
+    if object_ids:
+        object_events = list(object_events)
+        events.extend(object_events)
+
     return convert_mongo_docs(events)
 
 @all_events_router.get(
@@ -219,19 +243,41 @@ async def get_events_for_user(
     reservations = list(reservations_col.find(
         {"userId": user_id}
     ))
-    print("reservations:", reservations)
+    print("reservations:", len(reservations))
     
     if not reservations:
         return []
 
-    # Extract unique event IDs to minimize database queries
-    event_ids = list(set([res.get("eventId") for res in reservations if res.get("eventId")]))
+    # Extract unique event IDs to minimize database queries 
+    event_ids = list([res.get("eventId") for res in reservations if res.get("eventId")])
     
     if not event_ids:
         return []
 
-    # Find all events with those IDs
-    events = list(events_col.find({"_id": {"$in": event_ids}}))
+    # Separate by ID type
+    string_ids = []    # For UUID strings (>26 chars)
+    object_ids = []    # For ObjectIds (<=26 chars)
+
+    for event_id in event_ids:
+        if id_length_check(event_id):
+            object_ids.append(ObjectId(event_id))  # Convert to ObjectId
+        else:
+            string_ids.append(event_id)            # Keep as string
+
+    # Query separately
+    if string_ids:
+        string_events = events_col.find({"_id": {"$in": string_ids}})
+    if object_ids:  
+        object_events = events_col.find({"_id": {"$in": object_ids}})
+
+    # Combine results
+    events = []
+    if string_ids:
+        string_events = list(string_events)
+        events.extend(string_events)
+    if object_ids:
+        object_events = list(object_events)
+        events.extend(object_events)
     
     # Convert events to dict for easy lookup by eventId
     events_dict = {}
@@ -255,7 +301,7 @@ async def get_events_for_user(
                 "reservation_id": reservation_id
             }
             events_with_reservation_id.append(paired_data)
-    
+    print(len(events_with_reservation_id))
     return events_with_reservation_id
 
 # Endpoint for personal recommendations with GenAI

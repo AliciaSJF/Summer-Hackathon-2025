@@ -101,9 +101,12 @@ async def create_reservation(
     
     # Get KYCInfor from the user
     user_col = db["users"]
-    user = user_col.find_one({"_id": ObjectId(payload.userId)})
-    kyc_info = user.get("kycInfo")
-    
+    if not id_length_check(payload.userId):
+        user = user_col.find_one({"_id": payload.userId})
+    else:
+        user = user_col.find_one({"_id": ObjectId(payload.userId)})
+        
+    kyc_info = user.get("kyc")
     # TODO: implement otp verification.
     
     # Add fields that are auto-generated or have defaults

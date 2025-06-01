@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import BackButton from "../../components/BackButton";
 
 interface EventWithReservation {
   _id: string;
@@ -44,8 +45,11 @@ export default function MisEventosPage() {
   return (
     <div className="min-h-screen bg-usuario py-10 px-4">
       <div className="max-w-5xl mx-auto bg-white rounded-2xl shadow-md p-8 space-y-8 border border-gray-200">
-        <div className="flex justify-between items-center">
-          <h2 className="text-3xl font-bold text-text-main">🎟 Tus eventos</h2>
+        <div className="flex justify-between items-center relative">
+          <BackButton to="/usuario/home" color="#0e7c54" />
+          <h2 className="text-3xl font-bold text-text-main mt-12">
+            🎟 Tus eventos
+          </h2>
         </div>
 
         {loading ? (

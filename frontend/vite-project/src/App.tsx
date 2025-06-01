@@ -6,11 +6,10 @@ import NotFound from "./pages/NotFound";
 
 // Usuario
 import RegistroPage from "./pages/usuario/RegistroPage";
-import UauarioHomePage from "./pages/usuario/UsuarioHomePage"; // Si la tienes
+import UsuarioHomePage from "./pages/usuario/UsuarioHomePage"; // Si la tienes
 import EventosPage from "./pages/usuario/EventosPage";
 import DetalleEventoPage from "./pages/usuario/DetalleEventoPage";
 import MisEventosPage from "./pages/usuario/MisEventosPage";
-import UsuarioResenasPage from "./pages/usuario/UsuarioResenasPage";
 import DetalleReservaPage from "./pages/usuario/DetalleReservaPage";
 import RecomendacionesEventoPage from "./pages/usuario/RecomendacionesEventoPage";
 // Empresa
@@ -28,15 +27,17 @@ function App() {
 
         {/* Usuario */}
         <Route path="/usuario/registro" element={<RegistroPage />} />
-        <Route path="/usuario/home" element={<UauarioHomePage />} />
+        <Route path="/usuario/home" element={<UsuarioHomePage />} />
         <Route path="/usuario/eventos" element={<EventosPage />} />
         <Route path="/usuario/eventos/:id" element={<DetalleEventoPage />} />
         <Route path="/usuario/mis-eventos" element={<MisEventosPage />} />
-        <Route path="/usuario/reseñas" element={<UsuarioResenasPage />} />
-        <Route path="/usuario/recomendaciones" element={<RecomendacionesEventoPage />} />
         <Route
           path="/usuario/reservations/:reservationId/event/:eventId"
           element={<DetalleReservaPage />}
+        />
+        <Route
+          path="/usuario/recomendaciones"
+          element={<RecomendacionesEventoPage />}
         />
         {/* Empresa */}
         <Route path="/empresa/home" element={<EmpresaHomePage />} />

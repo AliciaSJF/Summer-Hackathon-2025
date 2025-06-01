@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { crearEvento } from "../../services/eventService";
+import BackButton from "../../components/BackButton";
 
 export default function CrearEventoPage() {
   const businessId =
@@ -65,8 +66,9 @@ export default function CrearEventoPage() {
 
   return (
     <div className="min-h-screen bg-empresa py-10 px-4">
-      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-md p-8 space-y-6">
-        <h2 className="text-3xl font-bold text-text-main">
+      <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-md p-8 space-y-6 relative">
+        <BackButton to="/empresa/home" color="#007c91" />
+        <h2 className="text-3xl font-bold text-text-main mt-6">
           📝 Crear nuevo evento
         </h2>
 

@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
+import BackButton from "../../components/BackButton";
 
 export default function EmpresaCheckInPage() {
   const { eventId } = useParams();
@@ -80,8 +81,9 @@ export default function EmpresaCheckInPage() {
 
   return (
     <div className="min-h-screen bg-empresa py-10 px-4">
-      <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow space-y-6">
-        <h1 className="text-3xl font-bold text-text-main">
+      <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow space-y-6 relative">
+        <BackButton to="/empresa/home" color="#007c91" />
+        <h1 className="text-3xl font-bold text-text-main mt-6">
           📲 Check-in evento <span className="text-blue-700">{eventId}</span>
         </h1>
 

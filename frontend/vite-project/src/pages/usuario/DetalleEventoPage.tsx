@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
+import BackButton from "../../components/BackButton";
 
 type Evento = {
   _id: string;
@@ -65,10 +66,13 @@ export default function DetalleEventoPage() {
 
   return (
     <div className="min-h-screen bg-usuario py-10 px-4">
-      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-8 space-y-6 border border-gray-200">
+      <div className="max-w-3xl mx-auto bg-white rounded-2xl shadow-md p-8 space-y-6 border border-gray-200 relative">
+        <BackButton to="/usuario/home" color="#0e7c54" />
         {evento ? (
           <>
-            <h1 className="text-3xl font-bold text-text-main">{evento.name}</h1>
+            <h1 className="text-3xl font-bold text-text-main mt-6">
+              {evento.name}
+            </h1>
             <p className="text-gray-800">{evento.description}</p>
             <div className="space-y-1 text-sm text-gray-700">
               <p>

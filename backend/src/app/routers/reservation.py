@@ -293,6 +293,10 @@ async def create_review(
     
     business_id = event.get("businessId")
     
+    if not id_length_check(reservation_id):
+        reservation_id = ObjectId(reservation_id)
+    else:
+        reservation_id = reservation_id
     
     # Create review embedding
     review_embedding = ReviewEmbeddingModel(

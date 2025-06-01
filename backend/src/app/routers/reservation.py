@@ -209,10 +209,12 @@ async def do_checkin(
         "review": None,
         "previous_anomaly_checkins": previous_anomaly_checkins,
     }
-    col.update_one(
-        {"_id": ObjectId(reservation_id)},
-        {"$set": {"checkin": updated_checkin}}
-    )
+    
+    if not id_length_check(reservation_id):
+        col.update_one({"_id": reservation_id}, {"$set": {"checkin": updated_checkin}})
+    else:
+        col.update_one({"_id": ObjectId(reservation_id)}, {"$set": {"checkin": updated_checkin}})
+    
     return updated_checkin
 
 @router.post(

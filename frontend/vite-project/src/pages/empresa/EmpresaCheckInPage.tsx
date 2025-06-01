@@ -17,7 +17,7 @@ export default function EmpresaCheckInPage() {
       setReservations(data);
     } catch (err) {
       console.error(err);
-      setMensaje("Error al cargar las reservas");
+      setMensaje("❌ Error al cargar las reservas");
     }
   };
 
@@ -37,14 +37,14 @@ export default function EmpresaCheckInPage() {
 
       if (!res.ok) throw new Error("Error en el check-in");
 
-      await fetchReservations();
-      setMensaje("✅ Check-in realizado correctamente");
       const json = await res.json();
-      console.log(json);
-      console.log(json?.previous_anomaly_checkins);
+      await fetchReservations();
+
+      setMensaje("✅ Check-in realizado correctamente");
       if (json?.previous_anomaly_checkins) {
         setAnomalia("⚠️ Anomalías previas detectadas.");
       }
+
       setReservationId("");
     } catch (err) {
       console.error(err);
@@ -66,7 +66,7 @@ export default function EmpresaCheckInPage() {
       await fetchReservations();
     } catch (err) {
       console.error(err);
-      alert("Error al reportar problema");
+      alert("❌ Error al reportar problema");
     }
   };
 
@@ -79,57 +79,70 @@ export default function EmpresaCheckInPage() {
   };
 
   return (
-    <div className="p-6 max-w-3xl mx-auto">
-      <h1 className="text-2xl font-bold mb-4">
-        Check-in para evento <span className="text-blue-600">{eventId}</span>
-      </h1>
+    <div className="min-h-screen bg-empresa py-10 px-4">
+      <div className="max-w-3xl mx-auto bg-white p-6 rounded-lg shadow space-y-6">
+        <h1 className="text-3xl font-bold text-text-main">
+          📲 Check-in evento <span className="text-blue-700">{eventId}</span>
+        </h1>
 
-      <div className="flex gap-2 mb-4">
-        <input
-          type="text"
-          placeholder="Reservation ID"
-          value={reservationId}
-          onChange={(e) => setReservationId(e.target.value)}
-          className="input w-full"
-        />
-        <button
-          onClick={handleCheckIn}
-          className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-        >
-          Hacer check-in
-        </button>
+        <div className="flex gap-2">
+          <input
+            type="text"
+            placeholder="Reservation ID"
+            value={reservationId}
+            onChange={(e) => setReservationId(e.target.value)}
+            className="input flex-1"
+          />
+          <button onClick={handleCheckIn} className="btn-empresa">
+            ✅ Hacer check-in
+          </button>
+        </div>
+
+        {mensaje && (
+          <p className="text-center text-sm text-blue-700 font-medium">
+            {mensaje}
+          </p>
+        )}
+        {anomalia && (
+          <p className="text-center text-sm text-red-600 font-semibold">
+            {anomalia}
+          </p>
+        )}
+
+        <hr className="my-4" />
+
+        <h2 className="text-2xl font-semibold text-text-main">
+          📋 Reservas del evento
+        </h2>
+
+        <ul className="space-y-3">
+          {reservations.map((r) => (
+            <li
+              key={r._id}
+              className={`p-4 border rounded-lg shadow-sm ${getBgColor(
+                r
+              )} flex justify-between items-center`}
+            >
+              <div>
+                <p className="font-bold text-text-main">
+                  {r.kycInfo?.name || "Usuario Anónimo"}
+                </p>
+                <p className="text-sm text-gray-600">{r.kycInfo?.phone}</p>
+                <p className="text-sm text-gray-600">{r.kycInfo?.email}</p>
+                <p className="font-mono text-sm mt-1">{r._id}</p>
+              </div>
+              {r.checkin?.status === "completed" && (
+                <button
+                  onClick={() => reportProblem(r._id)}
+                  className="bg-yellow-500 hover:bg-yellow-600 text-white text-sm px-3 py-1 rounded"
+                >
+                  ⚠️ Notificar problema
+                </button>
+              )}
+            </li>
+          ))}
+        </ul>
       </div>
-
-      {mensaje && <p className="text-sm mb-4 text-center">{mensaje}</p>}
-      {anomalia && <p className="text-sm mb-4 text-center">{anomalia}</p>}
-      <h2 className="text-xl font-semibold mb-2">Reservas</h2>
-      <ul className="space-y-2">
-        {reservations.map((r) => (
-          <li
-            key={r._id}
-            className={`p-3 border rounded flex justify-between items-center ${getBgColor(
-              r
-            )}`}
-          >
-            <div>
-              <p className="font-semibold">
-                {r.kycInfo?.name || "Usuario Anónimo"}
-              </p>
-              <p className="text-xs text-gray-600">{r.kycInfo?.phone}</p>
-              <p className="text-xs text-gray-600">{r.kycInfo?.email}</p>
-              <p className="font-mono text-sm">{r._id}</p>
-            </div>
-            {r.checkin?.status === "completed" && (
-              <button
-                onClick={() => reportProblem(r._id)}
-                className="bg-yellow-500 text-white px-3 py-1 rounded text-sm hover:bg-yellow-600"
-              >
-                Notificar problema
-              </button>
-            )}
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

@@ -10,6 +10,10 @@
   --color-mongo-light: #f3fdf8;
   --color-mongo-muted: #b7dfca;
 
+  --color-telefonica-primary: #00b6f1;
+  --color-telefonica-dark: #00568b;
+  --color-telefonica-light: #e6f4fb;
+
   --text-color-primary: #1b1b1b;
   --text-color-muted: #6b7280;
   --border-color: #d1d5db;
@@ -32,6 +36,21 @@
 
 .bg-usuario {
   background-color: var(--color-mongo-light);
+}
+
+.btn-empresa {
+  background-color: var(--color-telefonica-primary);
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 8px;
+  transition: background 0.2s;
+}
+.btn-empresa:hover {
+  background-color: var(--color-telefonica-dark);
+}
+
+.bg-empresa {
+  background-color: var(--color-telefonica-light);
 }
 
 .card {

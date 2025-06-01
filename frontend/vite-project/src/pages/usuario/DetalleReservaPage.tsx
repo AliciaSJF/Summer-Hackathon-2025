@@ -13,6 +13,16 @@ type Evento = {
   price: number;
 };
 
+type Review = {
+  rating: number;
+  comment: string;
+};
+
+type Checkin = {
+  status: string;
+  review?: Review;
+};
+
 type Reserva = {
   _id: string;
   eventId: string;
@@ -24,15 +34,19 @@ type Reserva = {
   locationVerified?: boolean;
   completedAt?: string;
   metadata?: any;
+  checkin?: Checkin;
 };
 
 export default function DetalleReservaPage() {
   const { reservationId, eventId } = useParams();
   const navigate = useNavigate();
+
   const [evento, setEvento] = useState<Evento | null>(null);
   const [reserva, setReserva] = useState<Reserva | null>(null);
   const [mensaje, setMensaje] = useState("");
   const [loading, setLoading] = useState(true);
+  const [rating, setRating] = useState(5);
+  const [comment, setComment] = useState("");
 
   const usuario = JSON.parse(
     localStorage.getItem("usuario") || '{"_id": "683b4bfdebc0428122dd8146"}'
@@ -51,30 +65,30 @@ export default function DetalleReservaPage() {
       .finally(() => setLoading(false));
   }, [eventId, reservationId]);
 
-  const handleRegistro = async () => {
+  const enviarReseña = async (e: React.FormEvent) => {
+    e.preventDefault();
     try {
-      const res = await fetch("http://localhost:8001/reservations", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
-        body: JSON.stringify({
-          eventId: evento?._id,
-          userId: usuario._id,
-        }),
-      });
+      const res = await fetch(
+        `http://localhost:8001/reservations/${reservationId}/review`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ rating, comment }),
+        }
+      );
 
-      const success = await res.json();
-
-      if (success) {
-        setMensaje("✅ Registro completado con éxito");
-        setTimeout(() => navigate("/usuario/mis-eventos"), 2000);
+      if (res.ok) {
+        const updated = await res.json();
+        setReserva(updated);
+        setMensaje("✅ Reseña enviada correctamente");
       } else {
-        setMensaje("❌ No se pudo registrar. ¿Ya estás inscrito?");
+        setMensaje("❌ Error al enviar la reseña");
       }
-    } catch {
-      setMensaje("❌ Error al registrarse");
+    } catch (err) {
+      console.error(err);
+      setMensaje("❌ Error inesperado al enviar la reseña");
     }
   };
 
@@ -125,8 +139,7 @@ export default function DetalleReservaPage() {
                       alt="Código QR de la reserva"
                       className="w-32 h-32 border-2 border-gray-300 rounded-lg"
                       onError={(e) => {
-                        e.currentTarget.src =
-                          "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMTI4IiBoZWlnaHQ9IjEyOCIgdmlld0JveD0iMCAwIDEyOCAxMjgiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSIxMjgiIGhlaWdodD0iMTI4IiBmaWxsPSIjRjNGNEY2Ii8+CjxyZWN0IHg9IjE2IiB5PSIxNiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwIi8+CjxyZWN0IHg9IjgwIiB5PSIxNiIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwIi8+CjxyZWN0IHg9IjE2IiB5PSI4MCIgd2lkdGg9IjMyIiBoZWlnaHQ9IjMyIiBmaWxsPSIjMDAwIi8+Cjx0ZXh0IHg9IjY0IiB5PSI3MCIgZm9udC1mYW1pbHk9IkFyaWFsIiBmb250LXNpemU9IjEyIiBmaWxsPSIjNjY2IiB0ZXh0LWFuY2hvcj0ibWlkZGxlIj5RUjwvdGV4dD4KPC9zdmc+";
+                        e.currentTarget.src = "data:image/svg+xml;base64,...";
                       }}
                     />
                     <p className="text-sm text-gray-600 mt-2">
@@ -142,7 +155,7 @@ export default function DetalleReservaPage() {
                       </span>
                     </p>
                     <p>
-                      <strong>Estado:</strong>{" "}
+                      <strong>Estado de reserva:</strong>{" "}
                       <span
                         className={`ml-2 px-2 py-1 rounded text-sm font-medium ${
                           reserva.status === "completed"
@@ -160,6 +173,64 @@ export default function DetalleReservaPage() {
                       {new Date(reserva.preverifiedAt).toLocaleString()}
                     </p>
                   </div>
+
+                  {/* Sección para reseña */}
+                  {reserva.checkin?.status === "completed" &&
+                    !reserva.checkin.review && (
+                      <form
+                        onSubmit={enviarReseña}
+                        className="mt-6 space-y-4 border-t pt-4"
+                      >
+                        <h3 className="text-lg font-semibold">
+                          📝 Deja tu reseña
+                        </h3>
+
+                        <div>
+                          <label className="block mb-1">Puntuación (1-5)</label>
+                          <input
+                            type="number"
+                            min={1}
+                            max={5}
+                            value={rating}
+                            onChange={(e) => setRating(Number(e.target.value))}
+                            required
+                            className="input"
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block mb-1">Comentario</label>
+                          <textarea
+                            value={comment}
+                            onChange={(e) => setComment(e.target.value)}
+                            required
+                            className="input"
+                          />
+                        </div>
+
+                        <button
+                          type="submit"
+                          className="btn-usuario bg-green-600 hover:bg-green-700"
+                        >
+                          Enviar reseña
+                        </button>
+                      </form>
+                    )}
+
+                  {/* Mostrar reseña existente */}
+                  {reserva.checkin?.review && (
+                    <div className="mt-6 border-t pt-4 text-sm text-gray-700">
+                      <h3 className="text-lg font-semibold mb-2">Tu reseña</h3>
+                      <p>
+                        <strong>Puntuación:</strong>{" "}
+                        {reserva.checkin.review.rating}/5
+                      </p>
+                      <p>
+                        <strong>Comentario:</strong>{" "}
+                        {reserva.checkin.review.comment}
+                      </p>
+                    </div>
+                  )}
                 </>
               ) : (
                 <p className="text-gray-600">Cargando datos de reserva...</p>

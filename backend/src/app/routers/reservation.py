@@ -199,6 +199,7 @@ async def do_checkin(
     print("Location verification result:", result)
 
     # TODO: REMOVE THIS NEXT CODE IMPLEMENT REAL LOCATION VERIFICATION
+    status = ""
     if result:
         status = "completed"
     else:

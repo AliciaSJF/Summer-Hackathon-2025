@@ -21,7 +21,7 @@ def call_api(phone: str, scope: str, user_data: dict = None) -> dict:
         print("❌ No se pudo obtener auth_req_id")
         raise Exception("No se pudo obtener auth_req_id")
     token = get_access_token_from_auth_req_id(auth_req_id)
-    print("token:", token)
+
     if scope == "dpv:ResearchAndDevelopment#kyc-match:match":
         result = run_kyc_match(token=token, user_data=user_data)
     elif scope == "dpv:FraudPreventionAndDetection#device-location-read":
@@ -30,7 +30,7 @@ def call_api(phone: str, scope: str, user_data: dict = None) -> dict:
         raise Exception("Scope no válido")
     return result
 
-async def verify_location(phone:str , code:str, latitude, longitude) -> dict:
+def verify_location(phone:str , code:str, latitude, longitude) -> dict:
     print("Verificando ubicación del número:", phone, "con código:", code)
     client = DeviceLocation(credentials=credentials, phone_number=phone)
     #result = client.verify(40.5150, -3.6640, 10, phone)

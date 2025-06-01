@@ -6,7 +6,7 @@ from pymongo.database import Database
 import uuid
 
 class EventEmbeddingModel(BaseModel):
-    id: str = Field(default_factory=uuid.uuid4, alias="_id")
+    id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")
     eventId: str
     businessId: str
     description: str

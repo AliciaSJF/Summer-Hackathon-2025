@@ -3,9 +3,10 @@ from pymongo.database import Database
 from bson import ObjectId
 from typing import List
 from src.app.database.mongodb import get_database, get_mongo_client
-from src.app.models.EventModel import EventModel, CreateEventModel, EventWithReservationModel
+from src.app.models.EventModel import EventModel, CreateEventModel, EventWithReservationModel, EventEmbeddingsResult
 from dotenv import load_dotenv
 import os
+import numpy as np
 from datetime import datetime
 
 load_dotenv()
@@ -15,6 +16,10 @@ def id_length_check(id: str):
     if len(str(id)) > 26:
         return False  # String ID
     return True  # ObjectId
+
+def get_collection(collection_name: str, db: Database):
+    """Helper function to get collection from database"""
+    return db.get_collection(collection_name)
 
 router = APIRouter(prefix="/businesses/{business_id}/events", tags=["events"])
 
@@ -317,4 +322,171 @@ async def get_recommendations(
     user_id: str,
     db: Database = Depends(get_db),
 ):
-    pass
+    # Obtenemos las reviews del usuario
+    list_reviews = find_reviews_by_user(user_id, db)
+
+    print(f"Reviews for user {user_id}:")
+    for review in list_reviews:
+        print(f"Rating: {review['rating']}, Text: {review['text']}, eventId: {review['eventId']}")
+
+
+    # Sacamos los embeddings de las descripciones de los eventos en la lista de reviews
+    event_ids = list(set([review["eventId"] for review in list_reviews]))
+
+
+    events_embeddings=find_events_from_id(event_ids, db)
+
+    # Realizamos la agregación de los embeddings de los eventos utilizando tambien el valor del rating de la review
+    aggregated_embedding = []
+    for review, event_embedding in zip(list_reviews, events_embeddings):
+        rating = review["rating"]
+        # Normalizamos el rating a un rango de 0 a 1
+        normalized_rating = (rating - 2.5) / (5.0 - 2.5)  # Asumiendo que el rating está entre 2.5 y 5.0
+        weighted_embedding = [value * normalized_rating for value in event_embedding]
+        aggregated_embedding.append(weighted_embedding)
+    # Promedio de los embeddings agregados
+    average_embedding = np.mean(aggregated_embedding, axis=0).tolist()
+    print(f"Average Embedding for user {user_id}: {average_embedding}")
+
+    # Buscamos reviews similares a la media de los embeddings que no sean las que ya tiene el usuario
+    similar_events_results = find_similar_events(average_embedding, event_ids, db)
+    print(f"Similar events for user {user_id}:")
+    for event_result in similar_events_results:
+        print(f"Event: {event_result.eventModel.description}, Score: {event_result.score}")
+        
+    # Extract just the EventModel objects for the response
+    similar_events = [result.eventModel for result in similar_events_results]
+    return similar_events
+        
+# Apartir de aquí, son helpers para el endpoint de recomendaciones
+def find_reviews_Similar(bussinessId, query, db: Database):
+    """
+    Find reviews similar to a given query for a specific business.
+
+    Args:
+        bussinessId (str): The ID of the business to filter reviews.
+        query (str): The text query to find similar reviews.
+        db (Database): The MongoDB database instance.
+
+    Returns:
+        list: A list of similar reviews.
+    """
+    collection = db["reviewEmbeddings"]
+    pipeline = [
+        {
+            "$vectorSearch": {
+            "filter": {
+                "businessId": bussinessId
+            },
+            "index": "embedding_vector_index_Reviews",
+            "limit": 5,
+            "numCandidates": 100,
+            "path": "embedding",
+            "queryVector": query
+            }
+        },
+        {
+        "$project": {
+            "text": 1,
+            "rating": 1,
+            "score": {"$meta": "vectorSearchScore"}
+        }
+    }
+    ]
+    
+    return list(collection.aggregate(pipeline))
+
+def find_reviews_by_user(user_id, db: Database):
+    """
+    Find all reviews made by a specific user.
+
+    Args:
+        user_id (str): The ID of the user whose reviews are to be found.
+        db (Database): The MongoDB database instance.
+
+    Returns:
+        list: A list of reviews made by the specified user.
+    """
+    collection = get_collection("eventEmbeddings", db)
+    top_reviews = collection.find({"userId": user_id, "rating": {"$ne": None}}).sort("rating", -1).limit(5)
+    return list(top_reviews)
+
+def find_events_from_id(events_ids, db: Database):
+    """
+    Find events by their IDs.
+
+    Args:
+        events_ids (list): A list of event IDs to find.
+        db (Database): The MongoDB database instance.
+
+    Returns:
+        list: A list of event embeddings matching the specified IDs.
+    """
+    collection = get_collection("eventEmbeddings", db)
+    events = collection.find({"eventId": {"$in": events_ids}},
+    {"embedding": 1, "_id": 0})
+
+    return [event["embedding"] for event in events]
+
+def find_similar_events(embedding, listEventIds, db: Database) -> List[EventEmbeddingsResult]:
+    """
+    Find events similar to a given embedding that are not in the list.
+    Args:
+        embedding (list): The embedding vector to find similar events.
+        listEventIds (list): A list of event IDs to exclude from the search.
+        db (Database): The MongoDB database instance.
+    Returns:
+        list: A list of EventEmbeddingsResult objects with events and their similarity scores.
+    """
+    collection = db["eventEmbeddings"]
+    pipeline = [
+        {
+            "$vectorSearch": {
+                "filter": {
+                    "eventId": {"$nin": listEventIds}
+                },
+                "index": "embedding_vector_index_Events",
+                "limit": 10,
+                "numCandidates": 100,
+                "path": "embedding",
+                "queryVector": embedding
+            }
+        },
+        {
+            "$project": {
+                "eventId": 1,
+                "description": 1,
+                "score": {"$meta": "vectorSearchScore"}
+            }
+        }
+    ]
+    
+    embedding_results = list(collection.aggregate(pipeline))
+    
+    # Convert to EventEmbeddingsResult objects by fetching full event data
+    results = []
+    events_collection = db["events"]
+    
+    for embedding_result in embedding_results:
+        event_id = embedding_result["eventId"]
+        score = embedding_result["score"]
+        
+        # Fetch the full event data
+        if id_length_check(event_id):
+            event_doc = events_collection.find_one({"_id": ObjectId(event_id)})
+        else:
+            event_doc = events_collection.find_one({"_id": event_id})
+            
+        if event_doc:
+            # Convert MongoDB document to EventModel
+            event_doc = convert_mongo_doc(event_doc)
+            event_model = EventModel(**event_doc)
+            
+            # Create EventEmbeddingsResult
+            result = EventEmbeddingsResult(
+                eventModel=event_model,
+                score=score
+            )
+            results.append(result)
+    
+    return results

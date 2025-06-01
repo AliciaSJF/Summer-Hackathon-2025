@@ -40,3 +40,7 @@ class CreateEventModel(BaseModel):
 class EventWithReservationModel(EventModel):
     event: EventModel
     reservation_id: str
+    
+class EventEmbeddingsResult(BaseModel):
+    eventModel: EventModel
+    score: float

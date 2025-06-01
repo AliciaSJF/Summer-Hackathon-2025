@@ -305,7 +305,9 @@ async def create_review(
         embedding=generate_embedding(review.get("comment"))
     )
     
-    # From openai, get the embedding. 
+    # Save the embedding in the database. 
+    review_embedding_col = db["review_embeddings"]
+    review_embedding_col.insert_one(review_embedding.dict())
     
     return review
 

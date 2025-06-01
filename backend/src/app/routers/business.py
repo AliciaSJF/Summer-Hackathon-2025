@@ -5,6 +5,7 @@ from src.app.database.mongodb import get_database, get_mongo_client
 from src.app.models.BusinessModel import CreateBusinessModel, BusinessModel, BusinessDetailsModel
 from src.app.database.mongodb import get_businesses_collection 
 from dotenv import load_dotenv
+from langchain_openai import AzureOpenAIEmbeddings, AzureChatOpenAI
 import os
 
 load_dotenv()
@@ -100,13 +101,95 @@ async def get_site_selection(
 ):
     return {"business_id": business_id, "top_locations": []} 
 
+@router.get(
+    "/reviews_analysys/{business_id}",
+    summary="7. Análisis de reviews de negocio",
+)
+async def get_business_reviews_analysis(
+    business_id: str,
+    category: str,
+    db: Database = Depends(get_db),
+):
+   
+    #Modelo Embeddings
+    embeddings = AzureOpenAIEmbeddings(model="text-embedding-3-large")
+    #Modelo de lenguaje
+    llm = AzureChatOpenAI(model="gpt-4o-mini", temperature=0.2, streaming=True)
 
-#@router.post(
-#    "/reviews/{business_id}",
-#    db: Database = Depends(get_db),
-#):
-#async def get_business_reviews(
-#    db: Database = Depends(get_db),
-#    business_id: str,
-#):
+    #Diccionario de Categorías y el prompt para el modelo de lenguaje
+    categorias={
+        "Ambiente": "Quiero saber cómo se percibe mi negocio en términos de ambiente, incluyendo aspectos como limpieza, decoración, y comodidad.",
+        "Seguridad": " Quiero saber cómo se percibe mi negocio en términos de seguridad, incluyendo la percepción de los clientes sobre la seguridad física y la protección de datos.",
+        "Atención al Cliente": "Quiero saber cómo se percibe mi negocio en términos de atención al cliente, incluyendo la amabilidad, rapidez y eficacia del servicio.",
+    }
+
+    #Datos que se pasan desde fuera
+    businessId = business_id
+    categoria = category
+    if categoria not in categorias:
+        raise HTTPException(status_code=400, detail="Categoría no válida. Debe ser una de las siguientes: 'Ambiente', 'Seguridad', 'Atención al Cliente'.")
+    if not businessId:
+        raise HTTPException(status_code=400, detail="Business not found")
     
+    #Obtenemos la lista de reviews similares
+    query_embedding = embeddings.embed_query(categorias[categoria])  
+    col = db["reviewEmbeddings"]
+    pipeline = [
+        {
+            "$vectorSearch": {
+            "filter": {
+                "businessId": businessId
+            },
+            "index": "embedding_vector_index_Reviews",# TODO: CAMBIAR
+            "limit": 5,
+            "numCandidates": 100,
+            "path": "embedding",
+            "queryVector": query_embedding
+            }
+        },
+        {
+        "$project": {
+            "text": 1,
+            "rating": 1,
+            "score": {"$meta": "vectorSearchScore"}
+        }
+    }
+    ]
+    list_reviews = list(col.aggregate(pipeline))
+
+
+    #Nos quedamos con la lista de reviews solo el texto y solo si el score es mayor a 0.5
+    list_reviews = [f"{review['text']}" for review in list_reviews if review['score'] > 0.5]
+
+    # Generamos el prompt para el modelo de lenguaje
+    prompt = f"""
+        Eres un experto en análisis de opiniones de clientes. Tu tarea es analizar las opiniones de los clientes sobre un negocio específico y proporcionar un resumen detallado de la percepción del cliente en una categoría específica.
+
+        Categoría: {categoria}
+        Descripción de la categoría: {categorias[categoria]}
+        
+        Aquí tienes una lista de opiniones de clientes sobre el negocio:
+        {list_reviews}
+
+        Por favor, proporciona un resumen detallado de la percepción del cliente en la categoría '{categoria}'.
+    """
+    # Ejecutamos el modelo de lenguaje con el prompt generado
+    response = llm.invoke(prompt)
+    # Imprimimos la respuesta del modelo de lenguaje
+    print("Respuesta del modelo de lenguaje:")
+    print(response.content)
+    return response.content
+
+
+
+
+
+    #@router.post(
+    #    "/reviews/{business_id}",
+    #    db: Database = Depends(get_db),
+    #):
+    #async def get_business_reviews(
+    #    db: Database = Depends(get_db),
+    #    business_id: str,
+    #):
+        

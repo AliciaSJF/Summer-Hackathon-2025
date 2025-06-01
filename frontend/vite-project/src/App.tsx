@@ -12,6 +12,7 @@ import DetalleEventoPage from "./pages/usuario/DetalleEventoPage";
 import MisEventosPage from "./pages/usuario/MisEventosPage";
 import UsuarioResenasPage from "./pages/usuario/UsuarioResenasPage";
 import DetalleReservaPage from "./pages/usuario/DetalleReservaPage";
+import RecomendacionesEventoPage from "./pages/usuario/RecomendacionesEventoPage";
 // Empresa
 import EmpresaHomePage from "./pages/empresa/EmpresaHomePage";
 import DashboardPage from "./pages/empresa/DashboardPage";
@@ -32,6 +33,7 @@ function App() {
         <Route path="/usuario/eventos/:id" element={<DetalleEventoPage />} />
         <Route path="/usuario/mis-eventos" element={<MisEventosPage />} />
         <Route path="/usuario/reseñas" element={<UsuarioResenasPage />} />
+        <Route path="/usuario/recomendaciones" element={<RecomendacionesEventoPage />} />
         <Route
           path="/usuario/reservations/:reservationId/event/:eventId"
           element={<DetalleReservaPage />}

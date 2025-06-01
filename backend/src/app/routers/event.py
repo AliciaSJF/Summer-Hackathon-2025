@@ -315,7 +315,7 @@ async def get_events_for_user(
 # Endpoint for personal recommendations with GenAI
 @all_events_router.get(
     "/recommendations/{user_id}",
-    response_model=List[EventModel],
+    response_model=List[EventEmbeddingsResult],
     summary="Obtener recomendaciones de eventos para un usuario",
 )
 async def get_recommendations(
@@ -325,16 +325,28 @@ async def get_recommendations(
     # Obtenemos las reviews del usuario
     list_reviews = find_reviews_by_user(user_id, db)
 
-    print(f"Reviews for user {user_id}:")
+    print(f"Reviews for user {user_id}: {len(list_reviews)} found")
+    
+    # Handle case where user has no reviews - provide general popular events
+    if not list_reviews:
+        print(f"No reviews found for user {user_id}, providing general recommendations")
+        return get_popular_events(db)
+    
     for review in list_reviews:
-        print(f"Rating: {review['rating']}, Text: {review['text']}, eventId: {review['eventId']}")
-
+        print(f"Rating: {review['rating']}, Text: {review.get('text', 'N/A')}, eventId: {review['eventId']}")
 
     # Sacamos los embeddings de las descripciones de los eventos en la lista de reviews
     event_ids = list(set([review["eventId"] for review in list_reviews]))
+    
+    if not event_ids:
+        print(f"No valid event IDs found in reviews for user {user_id}")
+        return get_popular_events(db)
 
-
-    events_embeddings=find_events_from_id(event_ids, db)
+    events_embeddings = find_events_from_id(event_ids, db)
+    
+    if not events_embeddings:
+        print(f"No embeddings found for events of user {user_id}")
+        return get_popular_events(db)
 
     # Realizamos la agregación de los embeddings de los eventos utilizando tambien el valor del rating de la review
     aggregated_embedding = []
@@ -344,20 +356,57 @@ async def get_recommendations(
         normalized_rating = (rating - 2.5) / (5.0 - 2.5)  # Asumiendo que el rating está entre 2.5 y 5.0
         weighted_embedding = [value * normalized_rating for value in event_embedding]
         aggregated_embedding.append(weighted_embedding)
+    
     # Promedio de los embeddings agregados
-    average_embedding = np.mean(aggregated_embedding, axis=0).tolist()
-    print(f"Average Embedding for user {user_id}: {average_embedding}")
+    if not aggregated_embedding:
+        print(f"No valid embeddings to aggregate for user {user_id}")
+        return get_popular_events(db)
+    
+    average_embedding = np.mean(aggregated_embedding, axis=0)
+    
+    # Check for NaN values in the embedding
+    if np.isnan(average_embedding).any():
+        print(f"NaN values detected in average embedding for user {user_id}")
+        return get_popular_events(db)
+    
+    average_embedding = average_embedding.tolist()
+    print(f"Average Embedding for user {user_id}: computed successfully")
 
     # Buscamos reviews similares a la media de los embeddings que no sean las que ya tiene el usuario
     similar_events_results = find_similar_events(average_embedding, event_ids, db)
-    print(f"Similar events for user {user_id}:")
+    print(f"Similar events for user {user_id}: {len(similar_events_results)} found")
     for event_result in similar_events_results:
-        print(f"Event: {event_result.eventModel.description}, Score: {event_result.score}")
+        print(f"Event: {event_result.eventModel.description[:50]}..., Score: {event_result.score}")
         
-    # Extract just the EventModel objects for the response
-    similar_events = [result.eventModel for result in similar_events_results]
-    return similar_events
+    return similar_events_results
+
+def get_popular_events(db: Database, limit: int = 10) -> List[EventEmbeddingsResult]:
+    """
+    Get popular events as fallback recommendations when user has no history.
+    Returns recent events with default score.
+    """
+    events_collection = db["events"]
+    
+    # Get recent events, ordered by creation date
+    recent_events = list(events_collection.find({})
+                        .sort("createdAt", -1)
+                        .limit(limit))
+    
+    results = []
+    for event_doc in recent_events:
+        # Convert MongoDB document to EventModel
+        event_doc = convert_mongo_doc(event_doc)
+        event_model = EventModel(**event_doc)
         
+        # Create EventEmbeddingsResult with default score
+        result = EventEmbeddingsResult(
+            eventModel=event_model,
+            score=0.5  # Default score for popular recommendations
+        )
+        results.append(result)
+    
+    return results
+
 # Apartir de aquí, son helpers para el endpoint de recomendaciones
 def find_reviews_Similar(bussinessId, query, db: Database):
     """

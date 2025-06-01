@@ -71,6 +71,12 @@ export default function UsuarioHomePage() {
               📅 Mis eventos
             </button>
             <button
+              onClick={() => navigate("/usuario/recomendaciones")}
+              className="btn-usuario"
+            >
+              🎯 Recomendaciones
+            </button>
+            <button
               onClick={() => navigate("/usuario/reseñas")}
               className="btn-usuario"
             >

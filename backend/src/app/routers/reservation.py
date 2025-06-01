@@ -196,16 +196,7 @@ async def do_checkin(
     )
     print("Location verification result:", result)
 
-    
-
-
     # TODO: REMOVE THIS NEXT CODE IMPLEMENT REAL LOCATION VERIFICATION
-
-    random_number = random.random()
-    if random_number > 0.5:
-        status = "anomaly"
-    else:
-        status = "completed"
     
     updated_checkin = {
         "status": status,

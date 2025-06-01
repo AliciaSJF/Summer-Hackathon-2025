@@ -25,7 +25,7 @@ def call_api(phone: str, scope: str, user_data: dict = None) -> dict:
     if scope == "dpv:ResearchAndDevelopment#kyc-match:match":
         result = run_kyc_match(token=token, user_data=user_data)
     elif scope == "dpv:FraudPreventionAndDetection#device-location-read":
-        result = await verify_location(phone=phone, code=token, latitude=user_data.get("latitude", 40.442242), longitude=user_data.get("longitude", -3.697463))
+        result = verify_location(phone=phone, code=token, latitude=user_data.get("latitude", 40.442242), longitude=user_data.get("longitude", -3.697463))
     else:
         raise Exception("Scope no válido")
     return result

@@ -23,7 +23,7 @@ Aplicable a:
 
 ##  Arquitectura
 
-![Arquitectura General](images/image.png)  
+![Arquitectura General](/img/image.png)  
 _Visualización de capas: integración, aplicación, datos e inteligencia._
 
 ### Tecnologías utilizadas:
@@ -34,7 +34,7 @@ _Visualización de capas: integración, aplicación, datos e inteligencia._
 
 ---
 
-## 🧪 Demo
+##  Demo
 
 📺 **[Ver la demo aquí](https://youtu.be/4VWXtrW9VNw)**
 

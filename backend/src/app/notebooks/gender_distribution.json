@@ -1,0 +1,80 @@
+[
+  {
+    "subgroup": "All",
+    "x": [
+      "male",
+      "female",
+      "other"
+    ],
+    "y": [
+      26.32,
+      57.89,
+      15.79
+    ]
+  },
+  {
+    "subgroup": "Very Low",
+    "x": [
+      "male",
+      "female",
+      "other"
+    ],
+    "y": [
+      0.0,
+      100.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "Low",
+    "x": [
+      "male",
+      "female",
+      "other"
+    ],
+    "y": [
+      50.0,
+      50.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "Normal",
+    "x": [
+      "male",
+      "female",
+      "other"
+    ],
+    "y": [
+      0.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "High",
+    "x": [
+      "male",
+      "female",
+      "other"
+    ],
+    "y": [
+      100.0,
+      0.0,
+      0.0
+    ]
+  },
+  {
+    "subgroup": "Very High",
+    "x": [
+      "male",
+      "female",
+      "other"
+    ],
+    "y": [
+      25.0,
+      58.33,
+      16.67
+    ]
+  }
+]
